@@ -32,11 +32,10 @@ BASE_DIR = os.path.abspath(
 
 app.config["SECRET_KEY"] = "aura-secret-key-2028"
 
-app.config["SQLALCHEMY_DATABASE_URI"] = (
-    "sqlite:///"
-    + os.path.join(BASE_DIR, "aura.db")
+app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get(
+    "DATABASE_URL",
+    "sqlite:///" + os.path.join(BASE_DIR, "aura.db")
 )
-
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 db.init_app(app)
