@@ -1,0 +1,744 @@
+<!DOCTYPE html><html lang="en"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>AURA — Edit Task</title>
+
+<style>
+
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    }
+
+    body {
+        font-family:
+            Inter,
+            system-ui,
+            -apple-system,
+            BlinkMacSystemFont,
+            "Segoe UI",
+            sans-serif;
+
+        background:
+            radial-gradient(
+                circle at top left,
+                #1d2540 0,
+                #0b0e17 45%,
+                #070910 100%
+            );
+
+        color: white;
+        min-height: 100vh;
+        padding-bottom: 50px;
+    }
+
+    /* ================================
+       NAVBAR
+    ================================ */
+
+    .navbar {
+        height: 72px;
+
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+
+        padding: 0 20px;
+
+        background:
+            rgba(8,10,18,0.78);
+
+        border-bottom:
+            1px solid
+            rgba(255,255,255,0.08);
+
+        backdrop-filter: blur(18px);
+
+        position: sticky;
+        top: 0;
+        z-index: 20;
+    }
+
+    .brand {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .logo {
+        width: 40px;
+        height: 40px;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        border-radius: 13px;
+
+        background:
+            linear-gradient(
+                135deg,
+                #ffffff,
+                #8ea2ff
+            );
+
+        color: #080a10;
+
+        font-size: 20px;
+        font-weight: 900;
+    }
+
+    .brand-name {
+        font-size: 18px;
+        font-weight: 900;
+        letter-spacing: 1px;
+    }
+
+    .back {
+        text-decoration: none;
+
+        color: #aeb5c7;
+
+        font-size: 12px;
+
+        padding: 9px 13px;
+
+        border-radius: 10px;
+
+        border:
+            1px solid
+            rgba(255,255,255,0.08);
+
+        transition: 0.2s ease;
+    }
+
+    .back:hover {
+        color: white;
+
+        background:
+            rgba(255,255,255,0.06);
+    }
+
+    /* ================================
+       CONTAINER
+    ================================ */
+
+    .container {
+        width:
+            min(
+                650px,
+                calc(100% - 24px)
+            );
+
+        margin: 0 auto;
+
+        padding-top: 32px;
+    }
+
+    .eyebrow {
+        color: #8993ab;
+
+        font-size: 10px;
+
+        font-weight: 800;
+
+        letter-spacing: 2px;
+
+        margin-bottom: 8px;
+    }
+
+    h1 {
+        font-size:
+            clamp(
+                32px,
+                8vw,
+                45px
+            );
+
+        margin-bottom: 8px;
+    }
+
+    .subtitle {
+        color: #8e98ad;
+
+        font-size: 13px;
+
+        margin-bottom: 25px;
+    }
+
+    /* ================================
+       FORM CARD
+    ================================ */
+
+    .form-card {
+        padding: 24px;
+
+        border-radius: 24px;
+
+        background:
+            linear-gradient(
+                135deg,
+                rgba(255,255,255,0.075),
+                rgba(255,255,255,0.035)
+            );
+
+        border:
+            1px solid
+            rgba(255,255,255,0.09);
+
+        backdrop-filter: blur(18px);
+
+        box-shadow:
+            0 20px 60px
+            rgba(0,0,0,0.25);
+    }
+
+    /* ================================
+       FIELD
+    ================================ */
+
+    .field {
+        margin-bottom: 18px;
+    }
+
+    .field label {
+        display: block;
+
+        color: #aeb7ca;
+
+        font-size: 10px;
+
+        font-weight: 800;
+
+        letter-spacing: 1.2px;
+
+        margin-bottom: 8px;
+    }
+
+    input,
+    select,
+    textarea {
+
+        width: 100%;
+
+        border: 1px solid
+            rgba(255,255,255,0.09);
+
+        background:
+            rgba(5,7,14,0.55);
+
+        color: white;
+
+        border-radius: 13px;
+
+        padding: 13px 14px;
+
+        outline: none;
+
+        font-family: inherit;
+
+        font-size: 13px;
+
+        transition:
+            border-color 0.2s ease,
+            background 0.2s ease,
+            box-shadow 0.2s ease;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+
+        border-color:
+            rgba(142,162,255,0.65);
+
+        background:
+            rgba(8,10,20,0.75);
+
+        box-shadow:
+            0 0 0 3px
+            rgba(129,150,255,0.08);
+    }
+
+    textarea {
+        min-height: 110px;
+        resize: vertical;
+    }
+
+    select option {
+        background: #0b0e17;
+        color: white;
+    }
+
+    /* ================================
+       TIME GRID
+    ================================ */
+
+    .two-column {
+
+        display: grid;
+
+        grid-template-columns:
+            1fr 1fr;
+
+        gap: 12px;
+    }
+
+    /* ================================
+       BUTTONS
+    ================================ */
+
+    .actions {
+
+        display: grid;
+
+        grid-template-columns:
+            1fr 1fr;
+
+        gap: 10px;
+
+        margin-top: 25px;
+    }
+
+    .btn {
+
+        min-height: 48px;
+
+        border-radius: 13px;
+
+        border: 1px solid
+            rgba(255,255,255,0.10);
+
+        display: flex;
+
+        align-items: center;
+
+        justify-content: center;
+
+        text-decoration: none;
+
+        font-family: inherit;
+
+        font-size: 12px;
+
+        font-weight: 800;
+
+        cursor: pointer;
+
+        transition:
+            transform 0.2s ease,
+            background 0.2s ease,
+            border-color 0.2s ease;
+    }
+
+    .btn:hover {
+        transform: translateY(-1px);
+    }
+
+    .save-btn {
+
+        background:
+            linear-gradient(
+                135deg,
+                #ffffff,
+                #8ea2ff
+            );
+
+        color: #080a10;
+
+        border: none;
+    }
+
+    .save-btn:hover {
+
+        box-shadow:
+            0 10px 30px
+            rgba(129,150,255,0.18);
+    }
+
+    .cancel-btn {
+
+        color: #aeb5c7;
+
+        background:
+            rgba(255,255,255,0.035);
+    }
+
+    .cancel-btn:hover {
+
+        color: white;
+
+        background:
+            rgba(255,255,255,0.07);
+    }
+
+    /* ================================
+       DELETE
+    ================================ */
+
+    .danger-area {
+
+        margin-top: 18px;
+
+        padding-top: 18px;
+
+        border-top:
+            1px solid
+            rgba(255,255,255,0.07);
+    }
+
+    .delete-btn {
+
+        width: 100%;
+
+        min-height: 45px;
+
+        border-radius: 12px;
+
+        border:
+            1px solid
+            rgba(255,100,120,0.16);
+
+        background:
+            rgba(255,70,90,0.055);
+
+        color: #d993a0;
+
+        font-family: inherit;
+
+        font-size: 11px;
+
+        font-weight: 800;
+
+        cursor: pointer;
+
+        transition: 0.2s ease;
+    }
+
+    .delete-btn:hover {
+
+        background:
+            rgba(255,70,90,0.10);
+
+        border-color:
+            rgba(255,100,120,0.30);
+
+        color: #ffabb7;
+    }
+
+    /* ================================
+       HELP TEXT
+    ================================ */
+
+    .hint {
+
+        color: #697389;
+
+        font-size: 10px;
+
+        line-height: 1.5;
+
+        margin-top: 6px;
+    }
+
+    /* ================================
+       MOBILE
+    ================================ */
+
+    @media (max-width: 600px) {
+
+        .navbar {
+            padding: 0 15px;
+        }
+
+        .container {
+
+            width:
+                calc(100% - 20px);
+
+            padding-top: 25px;
+        }
+
+        .form-card {
+            padding: 18px;
+            border-radius: 21px;
+        }
+
+        .two-column {
+
+            grid-template-columns:
+                1fr;
+        }
+
+        .actions {
+
+            grid-template-columns:
+                1fr;
+        }
+
+        .brand-name {
+            font-size: 17px;
+        }
+
+        h1 {
+            font-size: 34px;
+        }
+    }
+
+</style>
+
+</head><body><!-- =========================================
+     NAVBAR
+========================================= --><nav class="navbar"><div class="brand">
+
+    <div class="logo">
+        A
+    </div>
+
+    <div class="brand-name">
+        AURA
+    </div>
+
+</div>
+
+<a
+    href="{{ url_for('home') }}"
+    class="back"
+>
+    ← Dashboard
+</a>
+
+</nav><!-- =========================================
+     MAIN
+========================================= --><main class="container"><div class="eyebrow">
+    TASK MANAGEMENT
+</div>
+
+<h1>
+    Edit Task
+</h1>
+
+<p class="subtitle">
+    Update your study mission and keep your plan organized.
+</p>
+
+
+<!-- =====================================
+     FORM
+====================================== -->
+
+<section class="form-card">
+
+    <form
+        method="POST"
+        action="{{ url_for('edit_task', task_id=task.id) }}"
+    >
+
+        <!-- DATE -->
+
+        <div class="field">
+
+            <label for="date">
+                DATE
+            </label>
+
+            <input
+                type="date"
+                id="date"
+                name="date"
+                value="{{ task.date.strftime('%Y-%m-%d') }}"
+                required
+            >
+
+        </div>
+
+
+        <!-- SUBJECT -->
+
+        <div class="field">
+
+            <label for="subject">
+                SUBJECT
+            </label>
+
+            <input
+                type="text"
+                id="subject"
+                name="subject"
+                value="{{ task.subject or '' }}"
+                placeholder="e.g. Accounting"
+                required
+            >
+
+        </div>
+
+
+        <!-- TITLE -->
+
+        <div class="field">
+
+            <label for="title">
+                TASK TITLE
+            </label>
+
+            <input
+                type="text"
+                id="title"
+                name="title"
+                value="{{ task.title or '' }}"
+                placeholder="What are you going to study?"
+                required
+            >
+
+        </div>
+
+
+        <!-- TIME -->
+
+        <div class="two-column">
+
+            <div class="field">
+
+                <label for="start_time">
+                    START TIME
+                </label>
+
+                <input
+                    type="time"
+                    id="start_time"
+                    name="start_time"
+                    value="{{ timetable_item.start_time if timetable_item else '' }}"
+                    required
+                >
+
+            </div>
+
+
+            <div class="field">
+
+                <label for="end_time">
+                    END TIME
+                </label>
+
+                <input
+                    type="time"
+                    id="end_time"
+                    name="end_time"
+                    value="{{ timetable_item.end_time if timetable_item else '' }}"
+                    required
+                >
+
+            </div>
+
+        </div>
+
+
+        <!-- PRIORITY -->
+
+        <div class="field">
+
+            <label for="priority">
+                PRIORITY
+            </label>
+
+            <select
+                id="priority"
+                name="priority"
+            >
+
+                <option
+                    value="low"
+                    {% if timetable_item and timetable_item.priority == "low" %}selected{% endif %}
+                >
+                    Low
+                </option>
+
+                <option
+                    value="normal"
+                    {% if not timetable_item or timetable_item.priority == "normal" %}selected{% endif %}
+                >
+                    Normal
+                </option>
+
+                <option
+                    value="high"
+                    {% if timetable_item and timetable_item.priority == "high" %}selected{% endif %}
+                >
+                    High
+                </option>
+
+            </select>
+
+        </div>
+
+
+        <!-- NOTES -->
+
+        <div class="field">
+
+            <label for="notes">
+                NOTES
+            </label>
+
+            <textarea
+                id="notes"
+                name="notes"
+                placeholder="Add any study notes or reminders..."
+            >{{ timetable_item.notes if timetable_item else '' }}</textarea>
+
+            <div class="hint">
+                Optional — add anything that will help you complete this task.
+            </div>
+
+        </div>
+
+
+        <!-- ACTIONS -->
+
+        <div class="actions">
+
+            <a
+                href="{{ url_for('home') }}"
+                class="btn cancel-btn"
+            >
+                Cancel
+            </a>
+
+            <button
+                type="submit"
+                class="btn save-btn"
+            >
+                Save Changes
+            </button>
+
+        </div>
+
+    </form>
+
+
+    <!-- =================================
+         DELETE
+    ================================== -->
+
+    <div class="danger-area">
+
+        <form
+            method="POST"
+            action="{{ url_for('delete_task', task_id=task.id) }}"
+            onsubmit="return confirm('Delete this task permanently?');"
+        >
+
+            <button
+                type="submit"
+                class="delete-btn"
+            >
+                Delete Task
+            </button>
+
+        </form>
+
+    </div>
+
+</section>
+
+</main></body></html>
