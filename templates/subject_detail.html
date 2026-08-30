@@ -1,0 +1,914 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta
+name="viewport"
+content="width=device-width, initial-scale=1.0"
+
+«»
+
+<title>AURA — {{ subject }}</title><style>
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+
+    font-family:
+        Inter,
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+
+    background:
+        radial-gradient(
+            circle at top left,
+            #1d2540 0,
+            #0b0e17 45%,
+            #070910 100%
+        );
+
+    color: white;
+
+    min-height: 100vh;
+
+    padding-bottom: 110px;
+}
+
+
+/* =========================================
+   NAVBAR
+========================================= */
+
+.navbar {
+
+    height: 72px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    padding: 0 20px;
+
+    background:
+        rgba(8,10,18,0.78);
+
+    border-bottom:
+        1px solid
+        rgba(255,255,255,0.08);
+
+    backdrop-filter: blur(18px);
+
+    position: sticky;
+
+    top: 0;
+
+    z-index: 20;
+}
+
+.brand {
+
+    font-size: 19px;
+
+    font-weight: 900;
+
+    letter-spacing: 1px;
+}
+
+.back {
+
+    text-decoration: none;
+
+    color: #aeb5c7;
+
+    font-size: 12px;
+
+    padding: 9px 13px;
+
+    border-radius: 10px;
+
+    border:
+        1px solid
+        rgba(255,255,255,0.08);
+}
+
+.back:hover {
+
+    color: white;
+
+    background:
+        rgba(255,255,255,0.06);
+}
+
+
+/* =========================================
+   CONTAINER
+========================================= */
+
+.container {
+
+    width:
+        min(
+            950px,
+            calc(100% - 24px)
+        );
+
+    margin: 0 auto;
+
+    padding-top: 30px;
+}
+
+
+/* =========================================
+   HEADER
+========================================= */
+
+.eyebrow {
+
+    color: #8993ab;
+
+    font-size: 10px;
+
+    font-weight: 800;
+
+    letter-spacing: 2px;
+
+    margin-bottom: 8px;
+}
+
+h1 {
+
+    font-size:
+        clamp(
+            32px,
+            8vw,
+            48px
+        );
+
+    margin-bottom: 8px;
+}
+
+.subtitle {
+
+    color: #8e98ad;
+
+    font-size: 13px;
+
+    margin-bottom: 25px;
+}
+
+
+/* =========================================
+   OVERVIEW
+========================================= */
+
+.overview {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, 1fr);
+
+    gap: 12px;
+
+    margin-bottom: 14px;
+}
+
+.card {
+
+    padding: 20px;
+
+    border-radius: 20px;
+
+    background:
+        rgba(255,255,255,0.05);
+
+    border:
+        1px solid
+        rgba(255,255,255,0.08);
+
+    backdrop-filter: blur(15px);
+}
+
+.label {
+
+    color: #858fa6;
+
+    font-size: 9px;
+
+    font-weight: 800;
+
+    letter-spacing: 1.2px;
+
+    margin-bottom: 8px;
+}
+
+.value {
+
+    font-size: 27px;
+
+    font-weight: 900;
+}
+
+.card-sub {
+
+    color: #737d92;
+
+    font-size: 10px;
+
+    margin-top: 6px;
+}
+
+
+/* =========================================
+   PROGRESS
+========================================= */
+
+.progress-card {
+
+    padding: 22px;
+
+    margin-bottom: 28px;
+
+    border-radius: 22px;
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(255,255,255,0.09),
+            rgba(255,255,255,0.035)
+        );
+
+    border:
+        1px solid
+        rgba(255,255,255,0.09);
+}
+
+.progress-top {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    margin-bottom: 13px;
+}
+
+.progress-title {
+
+    font-size: 15px;
+
+    font-weight: 800;
+}
+
+.progress-number {
+
+    font-size: 24px;
+
+    font-weight: 900;
+}
+
+.progress-bar {
+
+    height: 11px;
+
+    width: 100%;
+
+    background:
+        rgba(255,255,255,0.08);
+
+    border-radius: 99px;
+
+    overflow: hidden;
+}
+
+.progress-fill {
+
+    height: 100%;
+
+    width:
+        {{ progress }}%;
+
+    background:
+        linear-gradient(
+            90deg,
+            #ffffff,
+            #8196ff
+        );
+
+    border-radius: 99px;
+
+    transition: width 0.3s ease;
+}
+
+
+/* =========================================
+   TASK SECTION
+========================================= */
+
+.section-title {
+
+    font-size: 19px;
+
+    font-weight: 850;
+
+    margin-bottom: 13px;
+}
+
+.task-card {
+
+    padding: 18px;
+
+    margin-bottom: 10px;
+
+    border-radius: 18px;
+
+    background:
+        rgba(255,255,255,0.045);
+
+    border:
+        1px solid
+        rgba(255,255,255,0.075);
+}
+
+.task-top {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    gap: 12px;
+
+    align-items: flex-start;
+}
+
+.task-title {
+
+    font-size: 15px;
+
+    font-weight: 800;
+}
+
+.task-status {
+
+    font-size: 10px;
+
+    font-weight: 800;
+
+    padding: 6px 9px;
+
+    border-radius: 99px;
+
+    background:
+        rgba(255,255,255,0.08);
+
+    color: #9ba5ba;
+
+    white-space: nowrap;
+}
+
+.task-status.completed {
+
+    color: white;
+
+    background:
+        rgba(129,150,255,0.20);
+}
+
+.task-date {
+
+    color: #737d92;
+
+    font-size: 10px;
+
+    margin-top: 9px;
+}
+
+.task-notes {
+
+    color: #8c96aa;
+
+    font-size: 11px;
+
+    margin-top: 7px;
+
+    line-height: 1.5;
+}
+
+
+/* =========================================
+   TASK BUTTON
+========================================= */
+
+.task-action {
+
+    margin-top: 15px;
+}
+
+.task-button {
+
+    width: 100%;
+
+    border: none;
+
+    padding: 11px 15px;
+
+    border-radius: 12px;
+
+    font-family: inherit;
+
+    font-size: 11px;
+
+    font-weight: 800;
+
+    cursor: pointer;
+
+    color: white;
+
+    transition:
+        transform 0.2s ease,
+        opacity 0.2s ease;
+}
+
+.task-button:hover {
+
+    transform: translateY(-1px);
+
+    opacity: 0.9;
+}
+
+.task-button:active {
+
+    transform: scale(0.98);
+}
+
+.task-button.complete {
+
+    background:
+        linear-gradient(
+            135deg,
+            #8196ff,
+            #6378e8
+        );
+}
+
+.task-button.undo {
+
+    background:
+        rgba(255,255,255,0.08);
+
+    border:
+        1px solid
+        rgba(255,255,255,0.10);
+}
+
+
+/* =========================================
+   EMPTY
+========================================= */
+
+.empty {
+
+    padding: 40px 20px;
+
+    text-align: center;
+
+    color: #7f899e;
+
+    border:
+        1px dashed
+        rgba(255,255,255,0.15);
+
+    border-radius: 20px;
+}
+
+
+/* =========================================
+   BOTTOM NAV
+========================================= */
+
+.bottom-nav {
+
+    position: fixed;
+
+    bottom: 15px;
+
+    left: 50%;
+
+    transform:
+        translateX(-50%);
+
+    width:
+        min(
+            500px,
+            calc(100% - 24px)
+        );
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(4, 1fr);
+
+    padding: 8px;
+
+    background:
+        rgba(10,12,21,0.84);
+
+    border:
+        1px solid
+        rgba(255,255,255,0.10);
+
+    border-radius: 22px;
+
+    backdrop-filter: blur(20px);
+
+    box-shadow:
+        0 15px 50px
+        rgba(0,0,0,0.35);
+
+    z-index: 100;
+}
+
+.nav-item {
+
+    text-decoration: none;
+
+    color: #737c91;
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 3px;
+
+    padding: 9px 5px;
+
+    border-radius: 15px;
+}
+
+.nav-item span {
+
+    font-size: 19px;
+
+    line-height: 1;
+}
+
+.nav-item small {
+
+    font-size: 9px;
+
+    font-weight: 700;
+}
+
+.nav-item:hover,
+.nav-item.active {
+
+    color: white;
+
+    background:
+        rgba(255,255,255,0.08);
+}
+
+
+/* =========================================
+   RESPONSIVE
+========================================= */
+
+@media (max-width: 600px) {
+
+    .overview {
+
+        grid-template-columns:
+            1fr;
+    }
+
+    .task-top {
+
+        flex-direction: column;
+    }
+
+}
+
+</style></head><body><!-- =========================================
+     NAVBAR
+========================================= --><nav class="navbar"><div class="brand">
+    AURA
+</div>
+
+
+<a
+    href="{{ url_for('analytics') }}"
+    class="back"
+>
+    ← Analytics
+</a>
+
+</nav><!-- =========================================
+     MAIN
+========================================= --><main class="container"><!-- HEADER -->
+
+<div class="eyebrow">
+    SUBJECT ANALYTICS
+</div>
+
+
+<h1>
+    {{ subject }}
+</h1>
+
+
+<p class="subtitle">
+    Detailed performance for this subject.
+</p>
+
+
+<!-- =====================================
+     OVERVIEW
+====================================== -->
+
+<section class="overview">
+
+
+    <div class="card">
+
+        <div class="label">
+            TOTAL TASKS
+        </div>
+
+        <div class="value">
+            {{ total_tasks }}
+        </div>
+
+        <div class="card-sub">
+            Recorded tasks
+        </div>
+
+    </div>
+
+
+    <div class="card">
+
+        <div class="label">
+            COMPLETED
+        </div>
+
+        <div class="value">
+            {{ completed_tasks }}
+        </div>
+
+        <div class="card-sub">
+            Finished tasks
+        </div>
+
+    </div>
+
+
+    <div class="card">
+
+        <div class="label">
+            STUDY TIME
+        </div>
+
+        <div class="value">
+            {{ study_hours }}h
+        </div>
+
+        <div class="card-sub">
+            Study time
+        </div>
+
+    </div>
+
+
+</section>
+
+
+<!-- =====================================
+     PROGRESS
+====================================== -->
+
+<section class="progress-card">
+
+    <div class="progress-top">
+
+        <div class="progress-title">
+            Subject Completion
+        </div>
+
+        <div class="progress-number">
+            {{ progress }}%
+        </div>
+
+    </div>
+
+
+    <div class="progress-bar">
+
+        <div
+            class="progress-fill"
+            style="width: {{ progress }}%;"
+        ></div>
+
+    </div>
+
+</section>
+
+
+<!-- =====================================
+     TASKS
+====================================== -->
+
+<div class="section-title">
+    {{ subject }} Tasks
+</div>
+
+
+{% if tasks %}
+
+
+    {% for task in tasks %}
+
+
+        <div class="task-card">
+
+
+            <div class="task-top">
+
+
+                <div class="task-title">
+                    {{ task.title }}
+                </div>
+
+
+                {% if task.completed %}
+
+                    <div class="task-status completed">
+                        ✓ Completed
+                    </div>
+
+                {% else %}
+
+                    <div class="task-status">
+                        ○ Pending
+                    </div>
+
+                {% endif %}
+
+
+            </div>
+
+
+            <div class="task-date">
+
+                {{ task.date.strftime("%d %B %Y") }}
+
+            </div>
+
+
+            {% if task.notes %}
+
+                <div class="task-notes">
+
+                    {{ task.notes }}
+
+                </div>
+
+            {% endif %}
+
+
+            <!-- TASK ACTION -->
+
+            <div class="task-action">
+
+
+                {% if task.completed %}
+
+
+                    <form
+                        action="{{ url_for('uncomplete_task', task_id=task.id) }}"
+                        method="POST"
+                    >
+
+                        <button
+                            type="submit"
+                            class="task-button undo"
+                        >
+                            ↩ Mark as Pending
+                        </button>
+
+                    </form>
+
+
+                {% else %}
+
+
+                    <form
+                        action="{{ url_for('complete_task', task_id=task.id) }}"
+                        method="POST"
+                    >
+
+                        <button
+                            type="submit"
+                            class="task-button complete"
+                        >
+                            ✓ Mark as Complete
+                        </button>
+
+                    </form>
+
+
+                {% endif %}
+
+
+            </div>
+
+
+        </div>
+
+
+    {% endfor %}
+
+
+{% else %}
+
+
+    <div class="empty">
+
+        No tasks found for this subject.
+
+        <br><br>
+
+        Add a task to start tracking it.
+
+    </div>
+
+
+{% endif %}
+
+</main><!-- =========================================
+     BOTTOM NAV
+========================================= --><nav class="bottom-nav"><a
+    href="{{ url_for('home') }}"
+    class="nav-item"
+>
+
+    <span>⌂</span>
+
+    <small>
+        Home
+    </small>
+
+</a>
+
+
+<a
+    href="{{ url_for('timetable') }}"
+    class="nav-item"
+>
+
+    <span>▦</span>
+
+    <small>
+        Timetable
+    </small>
+
+</a>
+
+
+<a
+    href="{{ url_for('history') }}"
+    class="nav-item"
+>
+
+    <span>◷</span>
+
+    <small>
+        History
+    </small>
+
+</a>
+
+
+<a
+    href="{{ url_for('analytics') }}"
+    class="nav-item active"
+>
+
+    <span>◒</span>
+
+    <small>
+        Analytics
+    </small>
+
+</a>
+
+</nav></body></html>

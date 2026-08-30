@@ -1,0 +1,835 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8">
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
+
+<title>AURA — History</title>
+
+<style>
+
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    }
+
+
+    body {
+
+        font-family:
+            Inter,
+            system-ui,
+            -apple-system,
+            BlinkMacSystemFont,
+            "Segoe UI",
+            sans-serif;
+
+        min-height: 100vh;
+
+        color: #ffffff;
+
+        background:
+            radial-gradient(
+                circle at top left,
+                #1d2540 0,
+                #0b0e17 45%,
+                #070910 100%
+            );
+
+        padding-bottom: 50px;
+    }
+
+
+    /* =================================================
+       NAVBAR
+    ================================================= */
+
+    .navbar {
+
+        height: 72px;
+
+        display: flex;
+
+        align-items: center;
+
+        justify-content: space-between;
+
+        padding: 0 22px;
+
+        background:
+            rgba(8,10,18,0.72);
+
+        border-bottom:
+            1px solid
+            rgba(255,255,255,0.08);
+
+        backdrop-filter:
+            blur(18px);
+
+        position: sticky;
+
+        top: 0;
+
+        z-index: 20;
+    }
+
+
+    .brand {
+
+        display: flex;
+
+        align-items: center;
+
+        gap: 10px;
+    }
+
+
+    .logo {
+
+        width: 40px;
+
+        height: 40px;
+
+        display: flex;
+
+        align-items: center;
+
+        justify-content: center;
+
+        border-radius: 13px;
+
+        background:
+            linear-gradient(
+                135deg,
+                #ffffff,
+                #8ea2ff
+            );
+
+        color: #080a10;
+
+        font-weight: 900;
+
+        font-size: 20px;
+
+        box-shadow:
+            0 8px 30px
+            rgba(120,140,255,0.20);
+    }
+
+
+    .brand-name {
+
+        font-size: 19px;
+
+        font-weight: 800;
+
+        letter-spacing: 1px;
+    }
+
+
+    .back {
+
+        display: inline-flex;
+
+        align-items: center;
+
+        gap: 6px;
+
+        color: #aeb5c7;
+
+        text-decoration: none;
+
+        padding: 9px 13px;
+
+        border:
+            1px solid
+            rgba(255,255,255,0.08);
+
+        border-radius: 11px;
+
+        background:
+            rgba(255,255,255,0.035);
+
+        font-size: 12px;
+
+        font-weight: 700;
+
+        transition: 0.2s ease;
+    }
+
+
+    .back:hover {
+
+        color: white;
+
+        background:
+            rgba(255,255,255,0.08);
+
+        transform:
+            translateY(-1px);
+    }
+
+
+    /* =================================================
+       MAIN
+    ================================================= */
+
+    .container {
+
+        width:
+            min(
+                1000px,
+                calc(100% - 30px)
+            );
+
+        margin: 0 auto;
+
+        padding-top: 34px;
+    }
+
+
+    /* =================================================
+       HEADER
+    ================================================= */
+
+    .heading {
+
+        margin-bottom: 25px;
+    }
+
+
+    .eyebrow {
+
+        color: #8993ab;
+
+        font-size: 10px;
+
+        letter-spacing: 2px;
+
+        font-weight: 800;
+
+        margin-bottom: 9px;
+    }
+
+
+    h1 {
+
+        font-size:
+            clamp(
+                30px,
+                6vw,
+                44px
+            );
+
+        line-height: 1.1;
+
+        letter-spacing: -1px;
+
+        margin-bottom: 8px;
+    }
+
+
+    .subtitle {
+
+        color: #98a1b5;
+
+        font-size: 14px;
+
+        line-height: 1.6;
+
+        max-width: 620px;
+    }
+
+
+    /* =================================================
+       HISTORY LIST
+    ================================================= */
+
+    .history {
+
+        display: flex;
+
+        flex-direction: column;
+
+        gap: 13px;
+    }
+
+
+    /* =================================================
+       DAY CARD
+    ================================================= */
+
+    .day {
+
+        position: relative;
+
+        padding: 20px;
+
+        border-radius: 22px;
+
+        background:
+            linear-gradient(
+                135deg,
+                rgba(255,255,255,0.065),
+                rgba(255,255,255,0.030)
+            );
+
+        border:
+            1px solid
+            rgba(255,255,255,0.085);
+
+        backdrop-filter:
+            blur(18px);
+
+        box-shadow:
+            0 15px 45px
+            rgba(0,0,0,0.13);
+
+        overflow: hidden;
+
+        transition:
+            transform 0.2s ease,
+            border-color 0.2s ease;
+    }
+
+
+    .day::before {
+
+        content: "";
+
+        position: absolute;
+
+        top: 0;
+
+        left: 0;
+
+        width: 100%;
+
+        height: 1px;
+
+        background:
+            linear-gradient(
+                90deg,
+                transparent,
+                rgba(255,255,255,0.16),
+                transparent
+            );
+
+        opacity: 0.7;
+    }
+
+
+    .day:hover {
+
+        transform:
+            translateY(-2px);
+
+        border-color:
+            rgba(255,255,255,0.13);
+    }
+
+
+    /* =================================================
+       DAY TOP
+    ================================================= */
+
+    .day-top {
+
+        display: flex;
+
+        justify-content: space-between;
+
+        align-items: center;
+
+        gap: 15px;
+
+        margin-bottom: 15px;
+    }
+
+
+    .date {
+
+        font-size: 16px;
+
+        font-weight: 850;
+
+        line-height: 1.4;
+    }
+
+
+    .percentage {
+
+        min-width: 52px;
+
+        text-align: right;
+
+        font-size: 20px;
+
+        font-weight: 900;
+
+        letter-spacing: -0.5px;
+    }
+
+
+    /* =================================================
+       STATS
+    ================================================= */
+
+    .stats {
+
+        display: flex;
+
+        align-items: center;
+
+        flex-wrap: wrap;
+
+        gap: 9px;
+
+        margin-bottom: 14px;
+    }
+
+
+    .stats span {
+
+        padding: 6px 9px;
+
+        border-radius: 8px;
+
+        background:
+            rgba(255,255,255,0.045);
+
+        border:
+            1px solid
+            rgba(255,255,255,0.055);
+
+        color: #929cb1;
+
+        font-size: 10px;
+
+        font-weight: 700;
+    }
+
+
+    /* =================================================
+       PROGRESS BAR
+    ================================================= */
+
+    .bar {
+
+        width: 100%;
+
+        height: 9px;
+
+        border-radius: 99px;
+
+        background:
+            rgba(255,255,255,0.075);
+
+        overflow: hidden;
+    }
+
+
+    .fill {
+
+        height: 100%;
+
+        width: var(--progress);
+
+        background:
+            linear-gradient(
+                90deg,
+                #ffffff,
+                #8196ff
+            );
+
+        border-radius: 99px;
+
+        box-shadow:
+            0 0 15px
+            rgba(129,150,255,0.15);
+
+        transition:
+            width 0.6s ease;
+    }
+
+
+    /* =================================================
+       EMPTY STATE
+    ================================================= */
+
+    .empty {
+
+        padding:
+            65px 25px;
+
+        text-align: center;
+
+        border:
+            1px dashed
+            rgba(255,255,255,0.14);
+
+        border-radius: 23px;
+
+        background:
+            rgba(255,255,255,0.025);
+
+        color: #7f899f;
+    }
+
+
+    .empty-icon {
+
+        width: 58px;
+
+        height: 58px;
+
+        display: flex;
+
+        align-items: center;
+
+        justify-content: center;
+
+        margin:
+            0 auto 15px;
+
+        border-radius: 18px;
+
+        background:
+            rgba(255,255,255,0.055);
+
+        border:
+            1px solid
+            rgba(255,255,255,0.07);
+
+        color: #a8b1c4;
+
+        font-size: 27px;
+    }
+
+
+    .empty-title {
+
+        color: #c8cedb;
+
+        font-size: 17px;
+
+        font-weight: 800;
+
+        margin-bottom: 6px;
+    }
+
+
+    .empty-text {
+
+        color: #7f899f;
+
+        font-size: 12px;
+
+        line-height: 1.6;
+
+        max-width: 400px;
+
+        margin: auto;
+    }
+
+
+    /* =================================================
+       MOBILE
+    ================================================= */
+
+    @media (max-width: 650px) {
+
+        .navbar {
+
+            padding:
+                0 15px;
+        }
+
+
+        .brand-name {
+
+            font-size: 17px;
+        }
+
+
+        .container {
+
+            width:
+                calc(100% - 22px);
+
+            padding-top:
+                25px;
+        }
+
+
+        .heading {
+
+            margin-bottom:
+                21px;
+        }
+
+
+        .day {
+
+            padding:
+                17px;
+        }
+
+
+        .day-top {
+
+            align-items:
+                flex-start;
+        }
+
+
+        .date {
+
+            font-size:
+                14px;
+        }
+
+
+        .percentage {
+
+            font-size:
+                18px;
+        }
+
+
+        .stats {
+
+            gap:
+                7px;
+        }
+
+
+        .stats span {
+
+            font-size:
+                9px;
+
+            padding:
+                6px 8px;
+        }
+
+    }
+
+
+    @media (max-width: 390px) {
+
+        .back {
+
+            padding:
+                8px 10px;
+
+            font-size:
+                11px;
+        }
+
+
+        .logo {
+
+            width:
+                37px;
+
+            height:
+                37px;
+        }
+
+
+        .day-top {
+
+            flex-direction:
+                column;
+
+            gap:
+                7px;
+        }
+
+
+        .percentage {
+
+            text-align:
+                left;
+        }
+
+    }
+
+</style>
+
+</head><body><!-- =====================================================
+     NAVBAR
+===================================================== --><nav class="navbar"><div class="brand">
+
+    <div class="logo">
+        A
+    </div>
+
+    <div class="brand-name">
+        AURA
+    </div>
+
+</div>
+
+
+<a
+    href="{{ url_for('home') }}"
+    class="back"
+>
+    ← Dashboard
+</a>
+
+</nav><!-- =====================================================
+     MAIN
+===================================================== --><main class="container"><section class="heading">
+
+    <div class="eyebrow">
+        YOUR JOURNEY
+    </div>
+
+
+    <h1>
+        History
+    </h1>
+
+
+    <p class="subtitle">
+        See how consistently you are completing
+        your study missions.
+    </p>
+
+</section>
+
+
+{% if history %}
+
+
+    <section class="history">
+
+
+        {% for date, data in history.items() %}
+
+
+            {% set percent =
+                (data.completed / data.total * 100)
+                if data.total > 0
+                else 0
+            %}
+
+
+            <article class="day">
+
+
+                <div class="day-top">
+
+
+                    <div class="date">
+
+                        {{ date.strftime("%A") }}
+
+                        ·
+
+                        {{ date.strftime("%d %b %Y") }}
+
+                    </div>
+
+
+                    <div class="percentage">
+
+                        {{ percent|round|int }}%
+
+                    </div>
+
+
+                </div>
+
+
+                <div class="stats">
+
+
+                    <span>
+
+                        {{ data.total }}
+                        Tasks
+
+                    </span>
+
+
+                    <span>
+
+                        {{ data.completed }}
+                        Completed
+
+                    </span>
+
+
+                    <span>
+
+                        {{ data.total - data.completed }}
+                        Remaining
+
+                    </span>
+
+
+                </div>
+
+
+                <div class="bar">
+
+
+                    <div
+                        class="fill"
+                        style="
+                            --progress:
+                            {{ percent }}%;
+                        "
+                    ></div>
+
+
+                </div>
+
+
+            </article>
+
+
+        {% endfor %}
+
+
+    </section>
+
+
+{% else %}
+
+
+    <section class="empty">
+
+
+        <div class="empty-icon">
+            ◷
+        </div>
+
+
+        <div class="empty-title">
+
+            No history yet
+
+        </div>
+
+
+        <div class="empty-text">
+
+            Complete your first study task
+            and your journey will appear here.
+
+        </div>
+
+
+    </section>
+
+
+{% endif %}
+
+</main></body></html>

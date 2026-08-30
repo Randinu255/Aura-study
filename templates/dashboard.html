@@ -1,0 +1,2342 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8">
+
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0">
+
+<meta name="theme-color" content="#080b14">
+
+<title>AURA — Dashboard</title>
+
+<style>
+
+    /* =====================================================
+       RESET
+    ===================================================== */
+
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    }
+
+    :root {
+        --bg: #070910;
+        --bg-soft: #0b0f1a;
+        --card: rgba(255,255,255,0.055);
+        --card-hover: rgba(255,255,255,0.075);
+        --border: rgba(255,255,255,0.09);
+        --text: #ffffff;
+        --muted: #8f99ad;
+        --muted-2: #6f788b;
+        --accent: #8da0ff;
+        --accent-soft: rgba(141,160,255,0.16);
+    }
+
+
+    /* =====================================================
+       BODY
+    ===================================================== */
+
+    body {
+
+        font-family:
+            Inter,
+            system-ui,
+            -apple-system,
+            BlinkMacSystemFont,
+            "Segoe UI",
+            sans-serif;
+
+        background:
+
+            radial-gradient(
+                circle at 15% 0%,
+                rgba(87,105,190,0.22),
+                transparent 34%
+            ),
+
+            radial-gradient(
+                circle at 90% 25%,
+                rgba(70,83,155,0.12),
+                transparent 30%
+            ),
+
+            linear-gradient(
+                180deg,
+                #090c15 0%,
+                #070910 100%
+            );
+
+        color: var(--text);
+
+        min-height: 100vh;
+
+        padding-bottom: 115px;
+    }
+
+
+    a {
+        color: inherit;
+    }
+
+
+    button {
+        font-family: inherit;
+    }
+
+
+    /* =====================================================
+       NAVBAR
+    ===================================================== */
+
+    .navbar {
+
+        height: 70px;
+
+        display: flex;
+
+        align-items: center;
+
+        justify-content: space-between;
+
+        padding: 0 24px;
+
+        position: sticky;
+
+        top: 0;
+
+        z-index: 50;
+
+        background:
+            rgba(7,9,16,0.72);
+
+        border-bottom:
+            1px solid
+            rgba(255,255,255,0.07);
+
+        backdrop-filter:
+            blur(20px);
+
+        -webkit-backdrop-filter:
+            blur(20px);
+    }
+
+
+    .brand {
+
+        display: flex;
+
+        align-items: center;
+
+        gap: 11px;
+    }
+
+
+    .brand-logo {
+
+        width: 40px;
+
+        height: 40px;
+
+        display: flex;
+
+        align-items: center;
+
+        justify-content: center;
+
+        border-radius: 13px;
+
+        background:
+            linear-gradient(
+                135deg,
+                #ffffff,
+                #91a3ff
+            );
+
+        color: #080a12;
+
+        font-size: 19px;
+
+        font-weight: 950;
+
+        box-shadow:
+            0 8px 30px
+            rgba(120,140,255,0.22);
+    }
+
+
+    .brand-name {
+
+        font-size: 18px;
+
+        font-weight: 850;
+
+        letter-spacing: 1.5px;
+    }
+
+
+    .nav-actions {
+
+        display: flex;
+
+        align-items: center;
+
+        gap: 8px;
+    }
+
+
+    .nav-link {
+
+        text-decoration: none;
+
+        color: #9ca5b8;
+
+        font-size: 12px;
+
+        font-weight: 700;
+
+        padding: 9px 12px;
+
+        border-radius: 10px;
+
+        border:
+            1px solid
+            rgba(255,255,255,0.07);
+
+        transition: 0.2s ease;
+    }
+
+
+    .nav-link:hover {
+
+        color: white;
+
+        background:
+            rgba(255,255,255,0.06);
+
+        border-color:
+            rgba(255,255,255,0.13);
+    }
+
+
+    /* =====================================================
+       MAIN CONTAINER
+    ===================================================== */
+
+    .container {
+
+        width:
+            min(
+                1080px,
+                calc(100% - 30px)
+            );
+
+        margin:
+            0 auto;
+
+        padding-top:
+            35px;
+    }
+
+
+    /* =====================================================
+       WELCOME
+    ===================================================== */
+
+    .welcome {
+
+        margin-bottom:
+            24px;
+    }
+
+
+    .eyebrow {
+
+        color:
+            #8994aa;
+
+        font-size:
+            10px;
+
+        font-weight:
+            800;
+
+        letter-spacing:
+            2.2px;
+
+        margin-bottom:
+            9px;
+    }
+
+
+    .welcome h1 {
+
+        font-size:
+            clamp(
+                29px,
+                6vw,
+                43px
+            );
+
+        line-height:
+            1.08;
+
+        letter-spacing:
+            -1.4px;
+
+        margin-bottom:
+            9px;
+    }
+
+
+    .welcome h1 span {
+
+        background:
+            linear-gradient(
+                90deg,
+                #ffffff,
+                #a9b6ff
+            );
+
+        -webkit-background-clip:
+            text;
+
+        background-clip:
+            text;
+
+        color:
+            transparent;
+    }
+
+
+    .subtitle {
+
+        color:
+            #8d97aa;
+
+        font-size:
+            14px;
+
+        line-height:
+            1.5;
+    }
+
+
+    /* =====================================================
+       INTELLIGENCE
+    ===================================================== */
+
+    .intelligence-card {
+
+        position:
+            relative;
+
+        overflow:
+            hidden;
+
+        padding:
+            24px;
+
+        margin-bottom:
+            13px;
+
+        border-radius:
+            24px;
+
+        background:
+
+            linear-gradient(
+                135deg,
+                rgba(255,255,255,0.095),
+                rgba(255,255,255,0.035)
+            );
+
+        border:
+            1px solid
+            rgba(255,255,255,0.105);
+
+        box-shadow:
+            0 18px 50px
+            rgba(0,0,0,0.20);
+
+        backdrop-filter:
+            blur(18px);
+
+        -webkit-backdrop-filter:
+            blur(18px);
+    }
+
+
+    .intelligence-card::after {
+
+        content: "";
+
+        position:
+            absolute;
+
+        width:
+            180px;
+
+        height:
+            180px;
+
+        right:
+            -70px;
+
+        top:
+            -80px;
+
+        border-radius:
+            50%;
+
+        background:
+            rgba(120,140,255,0.10);
+
+        filter:
+            blur(20px);
+
+        pointer-events:
+            none;
+    }
+
+
+    .intelligence-badge {
+
+        display:
+            inline-flex;
+
+        align-items:
+            center;
+
+        gap:
+            7px;
+
+        color:
+            #aab4ff;
+
+        font-size:
+            9px;
+
+        font-weight:
+            900;
+
+        letter-spacing:
+            1.8px;
+
+        margin-bottom:
+            11px;
+    }
+
+
+    .intelligence-badge::before {
+
+        content: "";
+
+        width:
+            6px;
+
+        height:
+            6px;
+
+        border-radius:
+            50%;
+
+        background:
+            #aab4ff;
+
+        box-shadow:
+            0 0 12px
+            rgba(170,180,255,0.8);
+    }
+
+
+    .intelligence-card h2 {
+
+        font-size:
+            22px;
+
+        line-height:
+            1.2;
+
+        margin-bottom:
+            7px;
+    }
+
+
+    .intelligence-card p {
+
+        color:
+            #929caf;
+
+        font-size:
+            13px;
+
+        line-height:
+            1.65;
+
+        max-width:
+            650px;
+    }
+
+
+    .next-task {
+
+        margin-top:
+            18px;
+
+        padding:
+            14px 15px;
+
+        border-radius:
+            16px;
+
+        background:
+            rgba(255,255,255,0.05);
+
+        border:
+            1px solid
+            rgba(255,255,255,0.065);
+    }
+
+
+    .next-label {
+
+        color:
+            #727d92;
+
+        font-size:
+            8px;
+
+        font-weight:
+            900;
+
+        letter-spacing:
+            1.7px;
+
+        margin-bottom:
+            6px;
+    }
+
+
+    .next-title {
+
+        font-size:
+            15px;
+
+        font-weight:
+            800;
+
+        margin-bottom:
+            4px;
+
+        overflow:
+            hidden;
+
+        text-overflow:
+            ellipsis;
+
+        white-space:
+            nowrap;
+    }
+
+
+    .next-subject {
+
+        color:
+            #818ba0;
+
+        font-size:
+            11px;
+    }
+
+
+    /* =====================================================
+       QUICK OVERVIEW
+    ===================================================== */
+
+    .overview {
+
+        display:
+            grid;
+
+        grid-template-columns:
+            1fr 1fr;
+
+        gap:
+            13px;
+
+        margin-bottom:
+            24px;
+    }
+
+
+    .overview-card {
+
+        padding:
+            17px;
+
+        border-radius:
+            19px;
+
+        background:
+            rgba(255,255,255,0.045);
+
+        border:
+            1px solid
+            rgba(255,255,255,0.075);
+    }
+
+
+    .overview-label {
+
+        color:
+            #737e93;
+
+        font-size:
+            9px;
+
+        font-weight:
+            850;
+
+        letter-spacing:
+            1.4px;
+
+        margin-bottom:
+            8px;
+    }
+
+
+    .overview-value {
+
+        font-size:
+            25px;
+
+        font-weight:
+            900;
+    }
+
+
+    .overview-value small {
+
+        color:
+            #7d879a;
+
+        font-size:
+            11px;
+
+        font-weight:
+            600;
+    }
+
+
+    /* =====================================================
+       STREAK
+    ===================================================== */
+
+    .streak-card {
+
+        display:
+            flex;
+
+        align-items:
+            center;
+
+        justify-content:
+            space-between;
+
+        gap:
+            15px;
+
+        padding:
+            17px 19px;
+
+        margin-bottom:
+            26px;
+
+        border-radius:
+            20px;
+
+        background:
+            linear-gradient(
+                135deg,
+                rgba(255,255,255,0.055),
+                rgba(255,255,255,0.025)
+            );
+
+        border:
+            1px solid
+            rgba(255,255,255,0.075);
+    }
+
+
+    .streak-label {
+
+        color:
+            #747e92;
+
+        font-size:
+            9px;
+
+        font-weight:
+            850;
+
+        letter-spacing:
+            1.6px;
+
+        margin-bottom:
+            5px;
+    }
+
+
+    .streak-value {
+
+        font-size:
+            22px;
+
+        font-weight:
+            950;
+    }
+
+
+    .streak-message {
+
+        color:
+            #858fa3;
+
+        font-size:
+            11px;
+
+        text-align:
+            right;
+
+        line-height:
+            1.5;
+    }
+
+
+    /* =====================================================
+       SECTION HEADING
+    ===================================================== */
+
+    .section-heading {
+
+        display:
+            flex;
+
+        align-items:
+            center;
+
+        justify-content:
+            space-between;
+
+        margin-bottom:
+            12px;
+    }
+
+
+    .section-heading span {
+
+        font-size:
+            12px;
+
+        font-weight:
+            900;
+
+        letter-spacing:
+            1.2px;
+    }
+
+
+    .section-heading small {
+
+        color:
+            #6e788c;
+
+        font-size:
+            8px;
+
+        font-weight:
+            700;
+
+        letter-spacing:
+            1.2px;
+    }
+
+
+    /* =====================================================
+       SUBJECT PERFORMANCE
+    ===================================================== */
+
+    .subject-section {
+
+        margin-bottom:
+            27px;
+    }
+
+
+    .subject-grid {
+
+        display:
+            grid;
+
+        grid-template-columns:
+            repeat(2, 1fr);
+
+        gap:
+            11px;
+    }
+
+
+    .subject-card {
+
+        display:
+            block;
+
+        text-decoration:
+            none;
+
+        padding:
+            17px;
+
+        border-radius:
+            19px;
+
+        background:
+            rgba(255,255,255,0.045);
+
+        border:
+            1px solid
+            rgba(255,255,255,0.075);
+
+        transition:
+            transform 0.2s ease,
+            background 0.2s ease,
+            border-color 0.2s ease;
+    }
+
+
+    .subject-card:hover {
+
+        transform:
+            translateY(-2px);
+
+        background:
+            rgba(255,255,255,0.065);
+
+        border-color:
+            rgba(255,255,255,0.14);
+    }
+
+
+    .subject-top {
+
+        display:
+            flex;
+
+        justify-content:
+            space-between;
+
+        align-items:
+            center;
+
+        gap:
+            10px;
+
+        margin-bottom:
+            13px;
+    }
+
+
+    .subject-name {
+
+        font-size:
+            14px;
+
+        font-weight:
+            850;
+    }
+
+
+    .subject-count {
+
+        color:
+            #747e92;
+
+        font-size:
+            9px;
+
+        margin-top:
+            4px;
+    }
+
+
+    .subject-percent {
+
+        font-size:
+            17px;
+
+        font-weight:
+            950;
+    }
+
+
+    .subject-bar {
+
+        width:
+            100%;
+
+        height:
+            6px;
+
+        background:
+            rgba(255,255,255,0.075);
+
+        border-radius:
+            99px;
+
+        overflow:
+            hidden;
+    }
+
+
+    .subject-fill {
+
+        height:
+            100%;
+
+        background:
+            linear-gradient(
+                90deg,
+                #ffffff,
+                #879aff
+            );
+
+        border-radius:
+            99px;
+
+        transition:
+            width 0.6s ease;
+    }
+
+
+    .subject-empty {
+
+        padding:
+            25px 15px;
+
+        text-align:
+            center;
+
+        color:
+            #788297;
+
+        font-size:
+            11px;
+
+        background:
+            rgba(255,255,255,0.035);
+
+        border:
+            1px dashed
+            rgba(255,255,255,0.10);
+
+        border-radius:
+            18px;
+    }
+
+
+    /* =====================================================
+       STATS
+    ===================================================== */
+
+    .stats {
+
+        display:
+            grid;
+
+        grid-template-columns:
+            repeat(3, 1fr);
+
+        gap:
+            12px;
+
+        margin-bottom:
+            24px;
+    }
+
+
+    .stat {
+
+        padding:
+            18px;
+
+        border-radius:
+            19px;
+
+        background:
+            rgba(255,255,255,0.045);
+
+        border:
+            1px solid
+            rgba(255,255,255,0.075);
+
+        transition:
+            transform 0.2s ease;
+    }
+
+
+    .stat:hover {
+
+        transform:
+            translateY(-2px);
+    }
+
+
+    .stat-label {
+
+        color:
+            #7e889c;
+
+        font-size:
+            9px;
+
+        font-weight:
+            750;
+
+        letter-spacing:
+            1px;
+
+        text-transform:
+            uppercase;
+
+        margin-bottom:
+            9px;
+    }
+
+
+    .stat-value {
+
+        font-size:
+            28px;
+
+        font-weight:
+            900;
+    }
+
+
+    /* =====================================================
+       PROGRESS
+    ===================================================== */
+
+    .progress-card {
+
+        padding:
+            22px;
+
+        margin-bottom:
+            28px;
+
+        border-radius:
+            23px;
+
+        background:
+            linear-gradient(
+                135deg,
+                rgba(255,255,255,0.085),
+                rgba(255,255,255,0.032)
+            );
+
+        border:
+            1px solid
+            rgba(255,255,255,0.085);
+
+        box-shadow:
+            0 15px 45px
+            rgba(0,0,0,0.14);
+    }
+
+
+    .progress-top {
+
+        display:
+            flex;
+
+        align-items:
+            center;
+
+        justify-content:
+            space-between;
+
+        margin-bottom:
+            14px;
+    }
+
+
+    .progress-title {
+
+        font-size:
+            15px;
+
+        font-weight:
+            800;
+    }
+
+
+    .progress-number {
+
+        font-size:
+            24px;
+
+        font-weight:
+            950;
+    }
+
+
+    .progress-bar {
+
+        width:
+            100%;
+
+        height:
+            11px;
+
+        background:
+            rgba(255,255,255,0.075);
+
+        border-radius:
+            99px;
+
+        overflow:
+            hidden;
+    }
+
+
+    .progress-fill {
+
+        height:
+            100%;
+
+        width:
+            {{ progress }}%;
+
+        background:
+            linear-gradient(
+                90deg,
+                #ffffff,
+                #8295ff
+            );
+
+        border-radius:
+            99px;
+
+        transition:
+            width 0.7s ease;
+    }
+
+
+    /* =====================================================
+       MISSION HEADER
+    ===================================================== */
+
+    .section-header {
+
+        display:
+            flex;
+
+        align-items:
+            center;
+
+        justify-content:
+            space-between;
+
+        margin-bottom:
+            14px;
+    }
+
+
+    .section-title {
+
+        font-size:
+            20px;
+
+        font-weight:
+            900;
+
+        letter-spacing:
+            -0.4px;
+    }
+
+
+    .add-button {
+
+        display:
+            inline-flex;
+
+        align-items:
+            center;
+
+        justify-content:
+            center;
+
+        text-decoration:
+            none;
+
+        background:
+            #ffffff;
+
+        color:
+            #080a11;
+
+        padding:
+            10px 14px;
+
+        border-radius:
+            12px;
+
+        font-size:
+            11px;
+
+        font-weight:
+            900;
+
+        transition:
+            transform 0.2s ease,
+            opacity 0.2s ease;
+    }
+
+
+    .add-button:hover {
+
+        transform:
+            translateY(-1px);
+
+        opacity:
+            0.9;
+    }
+
+
+    /* =====================================================
+       TASKS
+    ===================================================== */
+
+    .tasks {
+
+        display:
+            flex;
+
+        flex-direction:
+            column;
+
+        gap:
+            9px;
+    }
+
+
+    .task {
+
+        display:
+            flex;
+
+        align-items:
+            center;
+
+        gap:
+            13px;
+
+        padding:
+            15px;
+
+        border-radius:
+            18px;
+
+        background:
+            rgba(255,255,255,0.043);
+
+        border:
+            1px solid
+            rgba(255,255,255,0.072);
+
+        transition:
+            transform 0.2s ease,
+            background 0.2s ease,
+            border-color 0.2s ease;
+    }
+
+
+    .task:hover {
+
+        transform:
+            translateY(-1px);
+
+        background:
+            rgba(255,255,255,0.065);
+
+        border-color:
+            rgba(255,255,255,0.12);
+    }
+
+
+    .check-form {
+
+        flex-shrink:
+            0;
+    }
+
+
+    .check-button {
+
+        width:
+            29px;
+
+        height:
+            29px;
+
+        border-radius:
+            9px;
+
+        border:
+            1px solid
+            rgba(255,255,255,0.23);
+
+        background:
+            transparent;
+
+        color:
+            #080a11;
+
+        cursor:
+            pointer;
+
+        font-size:
+            15px;
+
+        font-weight:
+            900;
+
+        display:
+            flex;
+
+        align-items:
+            center;
+
+        justify-content:
+            center;
+
+        transition:
+            0.2s ease;
+    }
+
+
+    .check-button:hover {
+
+        background:
+            rgba(255,255,255,0.09);
+
+        border-color:
+            rgba(255,255,255,0.4);
+    }
+
+
+    .completed .check-button {
+
+        background:
+            #ffffff;
+
+        border-color:
+            #ffffff;
+    }
+
+
+    .task-info {
+
+        flex:
+            1;
+
+        min-width:
+            0;
+    }
+
+
+    .task-title {
+
+        font-size:
+            14px;
+
+        font-weight:
+            750;
+
+        line-height:
+            1.4;
+
+        margin-bottom:
+            4px;
+
+        overflow:
+            hidden;
+
+        text-overflow:
+            ellipsis;
+
+        white-space:
+            nowrap;
+    }
+
+
+    .completed .task-title {
+
+        text-decoration:
+            line-through;
+
+        opacity:
+            0.45;
+    }
+
+
+    .task-meta {
+
+        color:
+            #788297;
+
+        font-size:
+            10px;
+    }
+
+
+    /* =====================================================
+       EMPTY
+    ===================================================== */
+
+    .empty {
+
+        padding:
+            45px 20px;
+
+        text-align:
+            center;
+
+        border:
+            1px dashed
+            rgba(255,255,255,0.14);
+
+        border-radius:
+            20px;
+
+        color:
+            #788297;
+
+        background:
+            rgba(255,255,255,0.025);
+    }
+
+
+    .empty-icon {
+
+        font-size:
+            34px;
+
+        margin-bottom:
+            10px;
+
+        color:
+            #a5b0ff;
+    }
+
+
+    .empty small {
+
+        display:
+            block;
+
+        margin-top:
+            7px;
+
+        color:
+            #656f83;
+
+        font-size:
+            10px;
+    }
+
+
+    /* =====================================================
+       BOTTOM NAVIGATION
+    ===================================================== */
+
+    .bottom-nav {
+
+        position:
+            fixed;
+
+        left:
+            50%;
+
+        bottom:
+            15px;
+
+        transform:
+            translateX(-50%);
+
+        width:
+            min(
+                500px,
+                calc(100% - 24px)
+            );
+
+        display:
+            grid;
+
+        grid-template-columns:
+            repeat(4, 1fr);
+
+        gap:
+            4px;
+
+        padding:
+            7px;
+
+        background:
+            rgba(9,11,20,0.82);
+
+        border:
+            1px solid
+            rgba(255,255,255,0.10);
+
+        border-radius:
+            22px;
+
+        backdrop-filter:
+            blur(22px);
+
+        -webkit-backdrop-filter:
+            blur(22px);
+
+        box-shadow:
+            0 18px 55px
+            rgba(0,0,0,0.38);
+
+        z-index:
+            100;
+    }
+
+
+    .nav-item {
+
+        display:
+            flex;
+
+        flex-direction:
+            column;
+
+        align-items:
+            center;
+
+        justify-content:
+            center;
+
+        gap:
+            4px;
+
+        padding:
+            9px 5px;
+
+        border-radius:
+            16px;
+
+        text-decoration:
+            none;
+
+        color:
+            #707a8e;
+
+        transition:
+            0.2s ease;
+    }
+
+
+    .nav-item span {
+
+        font-size:
+            18px;
+
+        line-height:
+            1;
+    }
+
+
+    .nav-item small {
+
+        font-size:
+            8px;
+
+        font-weight:
+            800;
+
+        letter-spacing:
+            0.2px;
+    }
+
+
+    .nav-item:hover {
+
+        color:
+            #ffffff;
+
+        background:
+            rgba(255,255,255,0.055);
+    }
+
+
+    .nav-item.active {
+
+        color:
+            #ffffff;
+
+        background:
+            rgba(255,255,255,0.085);
+    }
+
+
+    /* =====================================================
+       RESPONSIVE
+    ===================================================== */
+
+    @media (max-width: 700px) {
+
+        .navbar {
+
+            padding:
+                0 15px;
+        }
+
+
+        .container {
+
+            width:
+                calc(100% - 22px);
+
+            padding-top:
+                27px;
+        }
+
+
+        .stats {
+
+            grid-template-columns:
+                1fr;
+        }
+
+
+        .stat {
+
+            padding:
+                16px;
+        }
+
+
+        .stat-value {
+
+            font-size:
+                25px;
+        }
+
+
+        .task {
+
+            padding:
+                14px;
+        }
+
+    }
+
+
+    @media (max-width: 600px) {
+
+        .subject-grid {
+
+            grid-template-columns:
+                1fr;
+        }
+
+
+        .overview {
+
+            grid-template-columns:
+                1fr 1fr;
+        }
+
+
+        .brand-name {
+
+            font-size:
+                17px;
+        }
+
+
+        .nav-link {
+
+            padding:
+                8px 9px;
+
+            font-size:
+                10px;
+        }
+
+    }
+
+
+    @media (max-width: 480px) {
+
+        .navbar {
+
+            height:
+                64px;
+        }
+
+
+        .brand-logo {
+
+            width:
+                36px;
+
+            height:
+                36px;
+
+            border-radius:
+                11px;
+        }
+
+
+        .brand-name {
+
+            font-size:
+                16px;
+        }
+
+
+        .welcome h1 {
+
+            font-size:
+                29px;
+        }
+
+
+        .intelligence-card {
+
+            padding:
+                20px;
+        }
+
+
+        .overview {
+
+            gap:
+                8px;
+        }
+
+
+        .overview-card {
+
+            padding:
+                14px;
+        }
+
+
+        .overview-value {
+
+            font-size:
+                21px;
+        }
+
+
+        .streak-card {
+
+            align-items:
+                flex-start;
+
+            flex-direction:
+                column;
+        }
+
+
+        .streak-message {
+
+            text-align:
+                left;
+        }
+
+
+        .progress-card {
+
+            padding:
+                19px;
+        }
+
+
+        .section-title {
+
+            font-size:
+                18px;
+        }
+
+
+        .add-button {
+
+            padding:
+                9px 11px;
+        }
+
+    }
+
+</style>
+
+</head><body><!-- =====================================================
+     NAVBAR
+===================================================== --><nav class="navbar"><div class="brand">
+
+    <div class="brand-logo">
+        A
+    </div>
+
+    <div class="brand-name">
+        AURA
+    </div>
+
+</div>
+
+
+<div class="nav-actions">
+
+    <a
+        href="{{ url_for('history') }}"
+        class="nav-link"
+    >
+        History
+    </a>
+
+    <a
+        href="{{ url_for('logout') }}"
+        class="nav-link"
+    >
+        Logout
+    </a>
+
+</div>
+
+</nav><!-- =====================================================
+     MAIN
+===================================================== --><main class="container"><!-- WELCOME -->
+
+<section class="welcome">
+
+    <div class="eyebrow">
+        TODAY • YOUR FOCUS SPACE
+    </div>
+
+    <h1>
+        Hello, <span>{{ user.name }}</span> 👋
+    </h1>
+
+    <p class="subtitle">
+        Stay focused. Finish today's mission.
+    </p>
+
+</section>
+
+
+
+<!-- =================================================
+     AURA INTELLIGENCE
+================================================= -->
+
+<section class="intelligence-card">
+
+    <div class="intelligence-badge">
+        AURA INTELLIGENCE
+    </div>
+
+
+    <h2>
+        {{ intelligence_title }}
+    </h2>
+
+
+    <p>
+        {{ intelligence_message }}
+    </p>
+
+
+    {% if next_task %}
+
+        <div class="next-task">
+
+            <div class="next-label">
+                NEXT UP
+            </div>
+
+            <div class="next-title">
+                {{ next_task.title }}
+            </div>
+
+            <div class="next-subject">
+                {{ next_task.subject }}
+            </div>
+
+        </div>
+
+    {% endif %}
+
+</section>
+
+
+
+<!-- =================================================
+     QUICK OVERVIEW
+================================================= -->
+
+<section class="overview">
+
+    <div class="overview-card">
+
+        <div class="overview-label">
+            REMAINING
+        </div>
+
+        <div class="overview-value">
+            {{ remaining_tasks }}
+            <small>tasks</small>
+        </div>
+
+    </div>
+
+
+    <div class="overview-card">
+
+        <div class="overview-label">
+            COMPLETED TIME
+        </div>
+
+        <div class="overview-value">
+            {{ completed_hours }}h
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<!-- =================================================
+     STREAK
+================================================= -->
+
+<section class="streak-card">
+
+    <div>
+
+        <div class="streak-label">
+            CURRENT STREAK
+        </div>
+
+        <div class="streak-value">
+            🔥 {{ streak }}
+            DAY{% if streak != 1 %}S{% endif %}
+        </div>
+
+    </div>
+
+
+    <div class="streak-message">
+
+        {% if streak == 0 %}
+
+            Start your streak today.
+
+        {% elif streak < 3 %}
+
+            Keep going!
+
+        {% elif streak < 7 %}
+
+            You're building momentum.
+
+        {% else %}
+
+            Incredible consistency! 🏆
+
+        {% endif %}
+
+    </div>
+
+</section>
+
+
+
+<!-- =================================================
+     SUBJECT PERFORMANCE
+================================================= -->
+
+<section class="subject-section">
+
+    <div class="section-heading">
+
+        <span>
+            SUBJECT PERFORMANCE
+        </span>
+
+        <small>
+            YOUR PROGRESS
+        </small>
+
+    </div>
+
+
+    {% if subject_data %}
+
+        <div class="subject-grid">
+
+            {% for subject, data in subject_data.items() %}
+
+                <a
+                    href="{{ url_for(
+                        'subject_detail',
+                        subject_name=subject
+                    ) }}"
+                    class="subject-card"
+                >
+
+                    <div class="subject-top">
+
+                        <div>
+
+                            <div class="subject-name">
+                                {{ subject }}
+                            </div>
+
+                            <div class="subject-count">
+                                {{ data.completed }}
+                                /
+                                {{ data.total }}
+                                completed
+                            </div>
+
+                        </div>
+
+
+                        <div class="subject-percent">
+                            {{ data.progress }}%
+                        </div>
+
+                    </div>
+
+
+                    <div class="subject-bar">
+
+                        <div
+                            class="subject-fill"
+                            style="width: {{ data.progress }}%;"
+                        ></div>
+
+                    </div>
+
+                </a>
+
+            {% endfor %}
+
+        </div>
+
+
+    {% else %}
+
+        <div class="subject-empty">
+
+            Complete some tasks to see
+            subject performance.
+
+        </div>
+
+    {% endif %}
+
+</section>
+
+
+
+<!-- =================================================
+     STATS
+================================================= -->
+
+<section class="stats">
+
+    <div class="stat">
+
+        <div class="stat-label">
+            Today's Tasks
+        </div>
+
+        <div class="stat-value">
+            {{ total_tasks }}
+        </div>
+
+    </div>
+
+
+    <div class="stat">
+
+        <div class="stat-label">
+            Completed
+        </div>
+
+        <div class="stat-value">
+            {{ completed_tasks }}
+        </div>
+
+    </div>
+
+
+    <div class="stat">
+
+        <div class="stat-label">
+            Study Time
+        </div>
+
+        <div class="stat-value">
+            {{ study_hours }}h
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<!-- =================================================
+     PROGRESS
+================================================= -->
+
+<section class="progress-card">
+
+    <div class="progress-top">
+
+        <div class="progress-title">
+            Today's Progress
+        </div>
+
+        <div class="progress-number">
+            {{ progress }}%
+        </div>
+
+    </div>
+
+
+    <div class="progress-bar">
+
+        <div
+            class="progress-fill"
+            style="width: {{ progress }}%;"
+        ></div>
+
+    </div>
+
+</section>
+
+
+
+<!-- =================================================
+     TODAY'S MISSION
+================================================= -->
+
+<div class="section-header">
+
+    <div class="section-title">
+        Today's Mission
+    </div>
+
+
+    <a
+        href="{{ url_for('add_task') }}"
+        class="add-button"
+    >
+        + Add Task
+    </a>
+
+</div>
+
+
+
+<!-- =================================================
+     TASK LIST
+================================================= -->
+
+<section class="tasks">
+
+    {% if tasks %}
+
+        {% for task in tasks %}
+
+            <div
+                class="
+                    task
+                    {% if task.completed %}
+                        completed
+                    {% endif %}
+                "
+            >
+
+                <form
+                    method="POST"
+                    class="check-form"
+
+                    action="{% if task.completed %}
+
+                        {{ url_for(
+                            'uncomplete_task',
+                            task_id=task.id
+                        ) }}
+
+                    {% else %}
+
+                        {{ url_for(
+                            'complete_task',
+                            task_id=task.id
+                        ) }}
+
+                    {% endif %}"
+                >
+
+                    <button
+                        type="submit"
+                        class="check-button"
+                        aria-label="Toggle task"
+                    >
+
+                        {% if task.completed %}
+                            ✓
+                        {% endif %}
+
+                    </button>
+
+                </form>
+
+
+                <div class="task-info">
+
+                    <div class="task-title">
+                        {{ task.title }}
+                    </div>
+
+
+                    <div class="task-meta">
+
+                        {{ task.subject }}
+
+                        {% if task.timetable_item_id %}
+
+                            {% set item =
+                                task.user.timetable_items
+                                |selectattr(
+                                    "id",
+                                    "equalto",
+                                    task.timetable_item_id
+                                )
+                                |first
+                            %}
+
+                            {% if item %}
+
+                                •
+                                {{ item.start_time }}
+                                –
+                                {{ item.end_time }}
+
+                            {% endif %}
+
+                        {% endif %}
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        {% endfor %}
+
+
+    {% else %}
+
+        <div class="empty">
+
+            <div class="empty-icon">
+                ✦
+            </div>
+
+            <div>
+                No tasks for today.
+            </div>
+
+            <small>
+                Add your first task and start your mission.
+            </small>
+
+        </div>
+
+    {% endif %}
+
+</section>
+
+</main><!-- =====================================================
+     BOTTOM NAVIGATION
+===================================================== --><nav class="bottom-nav"><a
+    href="{{ url_for('home') }}"
+    class="nav-item active"
+>
+
+    <span>⌂</span>
+
+    <small>
+        Home
+    </small>
+
+</a>
+
+
+<a
+    href="{{ url_for('timetable') }}"
+    class="nav-item"
+>
+
+    <span>▦</span>
+
+    <small>
+        Timetable
+    </small>
+
+</a>
+
+
+<a
+    href="{{ url_for('history') }}"
+    class="nav-item"
+>
+
+    <span>◷</span>
+
+    <small>
+        History
+    </small>
+
+</a>
+
+
+<a
+    href="{{ url_for('analytics') }}"
+    class="nav-item"
+>
+
+    <span>◒</span>
+
+    <small>
+        Analytics
+    </small>
+
+</a>
+
+</nav></body></html>

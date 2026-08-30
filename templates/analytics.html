@@ -1,0 +1,1844 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>AURA — Analytics</title>
+
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+
+        :root {
+
+            --bg-1: #070910;
+            --bg-2: #0b0e17;
+
+            --text: #ffffff;
+            --muted: #8d97ad;
+            --muted-2: #737d92;
+
+            --glass: rgba(255,255,255,0.045);
+            --glass-strong: rgba(255,255,255,0.075);
+
+            --border: rgba(255,255,255,0.085);
+
+            --accent-1: #ffffff;
+            --accent-2: #8196ff;
+        }
+
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+
+        body {
+
+            font-family:
+                Inter,
+                system-ui,
+                -apple-system,
+                BlinkMacSystemFont,
+                "Segoe UI",
+                sans-serif;
+
+            background:
+
+                radial-gradient(
+                    circle at 10% 0%,
+                    rgba(70,88,170,0.28),
+                    transparent 30%
+                ),
+
+                radial-gradient(
+                    circle at 90% 25%,
+                    rgba(65,75,145,0.14),
+                    transparent 30%
+                ),
+
+                linear-gradient(
+                    145deg,
+                    var(--bg-2),
+                    var(--bg-1)
+                );
+
+            color: var(--text);
+
+            min-height: 100vh;
+
+            padding-bottom: 115px;
+        }
+
+
+        /* =====================================================
+           NAVBAR
+        ===================================================== */
+
+        .navbar {
+
+            height: 72px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            padding: 0 22px;
+
+            background:
+                rgba(7,9,16,0.72);
+
+            border-bottom:
+                1px solid
+                rgba(255,255,255,0.075);
+
+            backdrop-filter: blur(22px);
+
+            -webkit-backdrop-filter: blur(22px);
+
+            position: sticky;
+
+            top: 0;
+
+            z-index: 50;
+        }
+
+
+        .brand {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 10px;
+
+            font-size: 19px;
+
+            font-weight: 900;
+
+            letter-spacing: 1px;
+        }
+
+
+        .brand-logo {
+
+            width: 40px;
+
+            height: 40px;
+
+            border-radius: 13px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #ffffff,
+                    #8ea2ff
+                );
+
+            color: #080a10;
+
+            font-size: 19px;
+
+            font-weight: 950;
+
+            box-shadow:
+                0 8px 28px
+                rgba(120,140,255,0.20);
+        }
+
+
+        .back {
+
+            display: inline-flex;
+
+            align-items: center;
+
+            gap: 7px;
+
+            text-decoration: none;
+
+            color: #aeb5c7;
+
+            font-size: 12px;
+
+            font-weight: 700;
+
+            padding: 9px 13px;
+
+            border:
+                1px solid
+                rgba(255,255,255,0.08);
+
+            border-radius: 11px;
+
+            background:
+                rgba(255,255,255,0.025);
+
+            transition:
+                0.2s ease;
+        }
+
+
+        .back:hover {
+
+            color: white;
+
+            background:
+                rgba(255,255,255,0.07);
+
+            border-color:
+                rgba(255,255,255,0.14);
+
+            transform:
+                translateY(-1px);
+        }
+
+
+        /* =====================================================
+           MAIN
+        ===================================================== */
+
+        .container {
+
+            width:
+                min(
+                    1000px,
+                    calc(100% - 30px)
+                );
+
+            margin:
+                0 auto;
+
+            padding-top: 34px;
+        }
+
+
+        /* =====================================================
+           PAGE HEADER
+        ===================================================== */
+
+        .page-header {
+
+            margin-bottom: 25px;
+        }
+
+
+        .eyebrow {
+
+            display: inline-flex;
+
+            align-items: center;
+
+            gap: 7px;
+
+            color: #8e98b4;
+
+            font-size: 10px;
+
+            font-weight: 850;
+
+            letter-spacing: 2px;
+
+            margin-bottom: 10px;
+        }
+
+
+        .eyebrow::before {
+
+            content: "";
+
+            width: 6px;
+
+            height: 6px;
+
+            border-radius: 50%;
+
+            background:
+                #aab8ff;
+
+            box-shadow:
+                0 0 12px
+                rgba(129,150,255,0.8);
+        }
+
+
+        h1 {
+
+            font-size:
+                clamp(
+                    32px,
+                    7vw,
+                    48px
+                );
+
+            line-height: 1.05;
+
+            letter-spacing: -1.5px;
+
+            margin-bottom: 9px;
+        }
+
+
+        .subtitle {
+
+            color: var(--muted);
+
+            font-size: 13px;
+
+            line-height: 1.6;
+        }
+
+
+        /* =====================================================
+           OVERVIEW
+        ===================================================== */
+
+        .overview {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(3, 1fr);
+
+            gap: 12px;
+
+            margin-bottom: 14px;
+        }
+
+
+        .card {
+
+            position: relative;
+
+            overflow: hidden;
+
+            padding: 20px;
+
+            min-height: 130px;
+
+            border-radius: 21px;
+
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(255,255,255,0.065),
+                    rgba(255,255,255,0.035)
+                );
+
+            border:
+                1px solid var(--border);
+
+            backdrop-filter: blur(18px);
+
+            -webkit-backdrop-filter: blur(18px);
+
+            box-shadow:
+                0 14px 45px
+                rgba(0,0,0,0.13);
+
+            transition:
+                transform 0.2s ease,
+                border-color 0.2s ease,
+                background 0.2s ease;
+        }
+
+
+        .card::after {
+
+            content: "";
+
+            position: absolute;
+
+            width: 90px;
+
+            height: 90px;
+
+            right: -35px;
+
+            top: -35px;
+
+            border-radius: 50%;
+
+            background:
+                rgba(129,150,255,0.08);
+
+            filter: blur(5px);
+        }
+
+
+        .card:hover {
+
+            transform:
+                translateY(-2px);
+
+            border-color:
+                rgba(255,255,255,0.14);
+
+            background:
+                rgba(255,255,255,0.065);
+        }
+
+
+        .label {
+
+            color: #858fa6;
+
+            font-size: 9px;
+
+            font-weight: 850;
+
+            letter-spacing: 1.5px;
+
+            margin-bottom: 10px;
+        }
+
+
+        .value {
+
+            font-size: 29px;
+
+            line-height: 1;
+
+            font-weight: 950;
+
+            letter-spacing: -0.5px;
+        }
+
+
+        .card-sub {
+
+            color: #737d92;
+
+            font-size: 10px;
+
+            margin-top: 9px;
+        }
+
+
+        /* =====================================================
+           OVERALL PROGRESS
+        ===================================================== */
+
+        .progress-card {
+
+            position: relative;
+
+            overflow: hidden;
+
+            padding: 23px;
+
+            margin-bottom: 14px;
+
+            border-radius: 23px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    rgba(255,255,255,0.095),
+                    rgba(255,255,255,0.035)
+                );
+
+            border:
+                1px solid
+                rgba(255,255,255,0.10);
+
+            backdrop-filter: blur(18px);
+
+            -webkit-backdrop-filter: blur(18px);
+
+            box-shadow:
+                0 18px 55px
+                rgba(0,0,0,0.17);
+        }
+
+
+        .progress-card::before {
+
+            content: "";
+
+            position: absolute;
+
+            left: -80px;
+
+            bottom: -90px;
+
+            width: 220px;
+
+            height: 220px;
+
+            border-radius: 50%;
+
+            background:
+                rgba(129,150,255,0.08);
+
+            filter: blur(25px);
+
+            pointer-events: none;
+        }
+
+
+        .progress-top {
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            gap: 15px;
+
+            margin-bottom: 14px;
+        }
+
+
+        .progress-title {
+
+            font-size: 15px;
+
+            font-weight: 850;
+        }
+
+
+        .progress-number {
+
+            font-size: 25px;
+
+            font-weight: 950;
+        }
+
+
+        .progress-bar {
+
+            width: 100%;
+
+            height: 11px;
+
+            background:
+                rgba(255,255,255,0.075);
+
+            border-radius: 99px;
+
+            overflow: hidden;
+        }
+
+
+        .progress-fill {
+
+            height: 100%;
+
+            width: 0;
+
+            background:
+                linear-gradient(
+                    90deg,
+                    #ffffff,
+                    #8196ff
+                );
+
+            border-radius: 99px;
+
+            box-shadow:
+                0 0 16px
+                rgba(129,150,255,0.25);
+
+            transition:
+                width 0.7s ease;
+        }
+
+
+        /* =====================================================
+           BEST SUBJECT
+        ===================================================== */
+
+        .best-card {
+
+            position: relative;
+
+            overflow: hidden;
+
+            padding: 22px;
+
+            margin-bottom: 28px;
+
+            border-radius: 23px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    rgba(129,150,255,0.13),
+                    rgba(255,255,255,0.035)
+                );
+
+            border:
+                1px solid
+                rgba(129,150,255,0.18);
+
+            box-shadow:
+                0 18px 50px
+                rgba(0,0,0,0.14);
+        }
+
+
+        .best-card::after {
+
+            content: "✦";
+
+            position: absolute;
+
+            right: 24px;
+
+            top: 50%;
+
+            transform:
+                translateY(-50%);
+
+            font-size: 45px;
+
+            color:
+                rgba(255,255,255,0.07);
+        }
+
+
+        .best-label {
+
+            color: #a0aac2;
+
+            font-size: 9px;
+
+            font-weight: 850;
+
+            letter-spacing: 1.5px;
+
+            margin-bottom: 9px;
+        }
+
+
+        .best-name {
+
+            font-size: 23px;
+
+            font-weight: 950;
+
+            letter-spacing: -0.4px;
+
+            margin-bottom: 5px;
+        }
+
+
+        .best-text {
+
+            color: #8c96aa;
+
+            font-size: 12px;
+        }
+
+
+        /* =====================================================
+           SECTION TITLE
+        ===================================================== */
+
+        .section-title {
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            gap: 10px;
+
+            font-size: 19px;
+
+            font-weight: 900;
+
+            letter-spacing: -0.2px;
+
+            margin-bottom: 13px;
+        }
+
+
+        .section-title::after {
+
+            content: "";
+
+            height: 1px;
+
+            flex: 1;
+
+            max-width: 120px;
+
+            background:
+                linear-gradient(
+                    90deg,
+                    rgba(255,255,255,0.12),
+                    transparent
+                );
+        }
+
+
+        /* =====================================================
+           SUBJECT LINK
+        ===================================================== */
+
+        .subject-link {
+
+            display: block;
+
+            color: inherit;
+
+            text-decoration: none;
+
+            margin-bottom: 10px;
+        }
+
+
+        .subject-link:last-child {
+
+            margin-bottom: 0;
+        }
+
+
+        /* =====================================================
+           SUBJECT CARD
+        ===================================================== */
+
+        .subject-card {
+
+            position: relative;
+
+            overflow: hidden;
+
+            padding: 20px;
+
+            border-radius: 20px;
+
+            background:
+                rgba(255,255,255,0.045);
+
+            border:
+                1px solid
+                rgba(255,255,255,0.075);
+
+            backdrop-filter: blur(15px);
+
+            -webkit-backdrop-filter: blur(15px);
+
+            transition:
+                transform 0.2s ease,
+                background 0.2s ease,
+                border-color 0.2s ease;
+        }
+
+
+        .subject-card::before {
+
+            content: "";
+
+            position: absolute;
+
+            left: 0;
+
+            top: 0;
+
+            bottom: 0;
+
+            width: 2px;
+
+            background:
+                linear-gradient(
+                    180deg,
+                    #ffffff,
+                    #8196ff
+                );
+
+            opacity: 0;
+
+            transition:
+                opacity 0.2s ease;
+        }
+
+
+        .subject-link:hover .subject-card {
+
+            transform:
+                translateY(-2px);
+
+            background:
+                rgba(255,255,255,0.065);
+
+            border-color:
+                rgba(255,255,255,0.14);
+        }
+
+
+        .subject-link:hover .subject-card::before {
+
+            opacity: 1;
+        }
+
+
+        .subject-top {
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            gap: 15px;
+
+            margin-bottom: 11px;
+        }
+
+
+        .subject-name {
+
+            font-size: 15px;
+
+            font-weight: 850;
+        }
+
+
+        .subject-percent {
+
+            font-size: 19px;
+
+            font-weight: 950;
+        }
+
+
+        .bar {
+
+            width: 100%;
+
+            height: 8px;
+
+            background:
+                rgba(255,255,255,0.075);
+
+            border-radius: 99px;
+
+            overflow: hidden;
+        }
+
+
+        .fill {
+
+            height: 100%;
+
+            width: 0;
+
+            background:
+                linear-gradient(
+                    90deg,
+                    #ffffff,
+                    #8196ff
+                );
+
+            border-radius: 99px;
+
+            box-shadow:
+                0 0 13px
+                rgba(129,150,255,0.18);
+
+            transition:
+                width 0.6s ease;
+        }
+
+
+        .subject-meta {
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            gap: 10px;
+
+            margin-top: 9px;
+
+            color: #7f899e;
+
+            font-size: 10px;
+        }
+
+
+        .view-details {
+
+            color: #aeb8d0;
+
+            font-weight: 750;
+
+            white-space: nowrap;
+
+            transition:
+                transform 0.2s ease;
+        }
+
+
+        .subject-link:hover .view-details {
+
+            transform:
+                translateX(3px);
+
+            color: white;
+        }
+
+
+        /* =====================================================
+           WEEKLY
+        ===================================================== */
+
+        .week-card {
+
+            padding: 22px;
+
+            margin-top: 28px;
+
+            border-radius: 23px;
+
+            background:
+                rgba(255,255,255,0.045);
+
+            border:
+                1px solid
+                rgba(255,255,255,0.08);
+
+            backdrop-filter: blur(16px);
+
+            -webkit-backdrop-filter: blur(16px);
+        }
+
+
+        .week-card .section-title {
+
+            margin-bottom: 18px;
+        }
+
+
+        .week-row {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 12px;
+
+            margin-bottom: 14px;
+        }
+
+
+        .week-row:last-child {
+
+            margin-bottom: 0;
+        }
+
+
+        .week-name {
+
+            width: 62px;
+
+            color: #8c96aa;
+
+            font-size: 10px;
+
+            font-weight: 750;
+        }
+
+
+        .week-bar {
+
+            flex: 1;
+
+            height: 8px;
+
+            background:
+                rgba(255,255,255,0.075);
+
+            border-radius: 99px;
+
+            overflow: hidden;
+        }
+
+
+        .week-fill {
+
+            height: 100%;
+
+            width: 0;
+
+            background:
+                linear-gradient(
+                    90deg,
+                    #ffffff,
+                    #8196ff
+                );
+
+            border-radius: 99px;
+
+            transition:
+                width 0.6s ease;
+        }
+
+
+        .week-value {
+
+            width: 42px;
+
+            text-align: right;
+
+            font-size: 10px;
+
+            font-weight: 750;
+
+            color: #8c96aa;
+        }
+
+
+        /* =====================================================
+           EMPTY
+        ===================================================== */
+
+        .empty {
+
+            padding: 45px 20px;
+
+            text-align: center;
+
+            color: #7f899e;
+
+            border:
+                1px dashed
+                rgba(255,255,255,0.14);
+
+            border-radius: 20px;
+
+            background:
+                rgba(255,255,255,0.025);
+        }
+
+
+        .empty-icon {
+
+            font-size: 34px;
+
+            margin-bottom: 10px;
+
+            opacity: 0.7;
+        }
+
+
+        /* =====================================================
+           BOTTOM NAVIGATION
+        ===================================================== */
+
+        .bottom-nav {
+
+            position: fixed;
+
+            left: 50%;
+
+            bottom: 15px;
+
+            transform:
+                translateX(-50%);
+
+            width:
+                min(
+                    500px,
+                    calc(100% - 24px)
+                );
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(4, 1fr);
+
+            gap: 3px;
+
+            padding: 8px;
+
+            background:
+                rgba(9,11,19,0.84);
+
+            border:
+                1px solid
+                rgba(255,255,255,0.10);
+
+            border-radius: 23px;
+
+            backdrop-filter: blur(24px);
+
+            -webkit-backdrop-filter: blur(24px);
+
+            box-shadow:
+                0 18px 55px
+                rgba(0,0,0,0.40);
+
+            z-index: 100;
+        }
+
+
+        .nav-item {
+
+            position: relative;
+
+            display: flex;
+
+            flex-direction: column;
+
+            align-items: center;
+
+            justify-content: center;
+
+            gap: 4px;
+
+            padding: 9px 5px;
+
+            border-radius: 15px;
+
+            color: #737c91;
+
+            text-decoration: none;
+
+            transition:
+                0.2s ease;
+        }
+
+
+        .nav-item span {
+
+            font-size: 19px;
+
+            line-height: 1;
+        }
+
+
+        .nav-item small {
+
+            font-size: 9px;
+
+            font-weight: 750;
+        }
+
+
+        .nav-item:hover {
+
+            color: white;
+
+            background:
+                rgba(255,255,255,0.055);
+        }
+
+
+        .nav-item.active {
+
+            color: white;
+
+            background:
+                rgba(255,255,255,0.085);
+
+            box-shadow:
+                inset 0 0 0 1px
+                rgba(255,255,255,0.045);
+        }
+
+
+        .nav-item.active::before {
+
+            content: "";
+
+            position: absolute;
+
+            top: 5px;
+
+            left: 50%;
+
+            transform:
+                translateX(-50%);
+
+            width: 18px;
+
+            height: 2px;
+
+            border-radius: 99px;
+
+            background:
+                #ffffff;
+
+            opacity: 0.8;
+        }
+
+
+        /* =====================================================
+           RESPONSIVE
+        ===================================================== */
+
+        @media (max-width: 720px) {
+
+            .overview {
+
+                grid-template-columns:
+                    1fr;
+            }
+
+
+            .card {
+
+                min-height: auto;
+            }
+
+        }
+
+
+        @media (max-width: 600px) {
+
+            .navbar {
+
+                padding:
+                    0 15px;
+            }
+
+
+            .container {
+
+                width:
+                    calc(100% - 22px);
+
+                padding-top:
+                    25px;
+            }
+
+
+            .brand {
+
+                font-size: 17px;
+            }
+
+
+            .brand-logo {
+
+                width: 38px;
+
+                height: 38px;
+            }
+
+
+            .back {
+
+                padding:
+                    8px 10px;
+
+                font-size: 11px;
+            }
+
+
+            h1 {
+
+                font-size: 34px;
+
+                letter-spacing:
+                    -1px;
+            }
+
+
+            .subtitle {
+
+                font-size: 12px;
+            }
+
+
+            .progress-card,
+            .best-card,
+            .week-card {
+
+                padding: 18px;
+            }
+
+
+            .subject-card {
+
+                padding: 17px;
+            }
+
+
+            .subject-meta {
+
+                align-items:
+                    flex-start;
+
+                flex-direction:
+                    column;
+
+                gap: 6px;
+            }
+
+
+            .view-details {
+
+                font-size: 9px;
+            }
+
+
+            .week-name {
+
+                width: 52px;
+            }
+
+
+            .bottom-nav {
+
+                bottom: 12px;
+
+                width:
+                    calc(100% - 20px);
+            }
+
+        }
+
+
+        @media (max-width: 380px) {
+
+            .bottom-nav {
+
+                padding: 6px;
+            }
+
+
+            .nav-item {
+
+                padding:
+                    8px 3px;
+            }
+
+
+            .nav-item span {
+
+                font-size: 17px;
+            }
+
+
+            .nav-item small {
+
+                font-size: 8px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<!-- =====================================================
+     NAVBAR
+===================================================== -->
+
+<nav class="navbar">
+
+
+    <div class="brand">
+
+        <div class="brand-logo">
+            A
+        </div>
+
+        AURA
+
+    </div>
+
+
+    <a
+        href="{{ url_for('home') }}"
+        class="back"
+    >
+        ← Dashboard
+    </a>
+
+
+</nav>
+
+
+
+<!-- =====================================================
+     MAIN
+===================================================== -->
+
+<main class="container">
+
+
+    <!-- PAGE HEADER -->
+
+    <section class="page-header">
+
+        <div class="eyebrow">
+            PERFORMANCE ANALYTICS
+        </div>
+
+
+        <h1>
+            Your Analytics
+        </h1>
+
+
+        <p class="subtitle">
+            See how consistently you're progressing.
+        </p>
+
+    </section>
+
+
+
+    <!-- =================================================
+         OVERVIEW
+    ================================================= -->
+
+    <section class="overview">
+
+
+        <div class="card">
+
+            <div class="label">
+                TOTAL TASKS
+            </div>
+
+
+            <div class="value">
+                {{ total_tasks }}
+            </div>
+
+
+            <div class="card-sub">
+                All recorded tasks
+            </div>
+
+        </div>
+
+
+
+        <div class="card">
+
+            <div class="label">
+                COMPLETED
+            </div>
+
+
+            <div class="value">
+                {{ completed_tasks }}
+            </div>
+
+
+            <div class="card-sub">
+                Finished tasks
+            </div>
+
+        </div>
+
+
+
+        <div class="card">
+
+            <div class="label">
+                STUDY TIME
+            </div>
+
+
+            <div class="value">
+                {{ study_hours }}h
+            </div>
+
+
+            <div class="card-sub">
+                Completed study
+            </div>
+
+        </div>
+
+
+    </section>
+
+
+
+    <!-- =================================================
+         OVERALL PROGRESS
+    ================================================= -->
+
+    <section class="progress-card">
+
+
+        <div class="progress-top">
+
+            <div class="progress-title">
+                Overall Completion
+            </div>
+
+
+            <div class="progress-number">
+                {{ overall_progress }}%
+            </div>
+
+        </div>
+
+
+        <div class="progress-bar">
+
+            <div
+                class="progress-fill"
+                style="width: {{ overall_progress }}%;"
+            ></div>
+
+        </div>
+
+
+    </section>
+
+
+
+    <!-- =================================================
+         BEST SUBJECT
+    ================================================= -->
+
+    {% if best_subject %}
+
+    <section class="best-card">
+
+
+        <div class="best-label">
+            🏆 BEST PERFORMING SUBJECT
+        </div>
+
+
+        <div class="best-name">
+            {{ best_subject }}
+        </div>
+
+
+        <div class="best-text">
+
+            Current completion rate:
+            <strong>{{ best_progress }}%</strong>
+
+        </div>
+
+
+    </section>
+
+    {% endif %}
+
+
+
+    <!-- =================================================
+         SUBJECT PERFORMANCE
+    ================================================= -->
+
+    <section>
+
+
+        <div class="section-title">
+            Subject Performance
+        </div>
+
+
+
+        {% if subject_data %}
+
+
+            {% for subject, data in subject_data.items() %}
+
+
+                <a
+                    href="{{ url_for(
+                        'subject_detail',
+                        subject_name=subject
+                    ) }}"
+                    class="subject-link"
+                >
+
+
+                    <div class="subject-card">
+
+
+                        <div class="subject-top">
+
+
+                            <div class="subject-name">
+                                {{ subject }}
+                            </div>
+
+
+                            <div class="subject-percent">
+                                {{ data.progress }}%
+                            </div>
+
+
+                        </div>
+
+
+
+                        <div class="bar">
+
+                            <div
+                                class="fill"
+                                style="
+                                    width:
+                                    {{ data.progress }}%;
+                                "
+                            ></div>
+
+                        </div>
+
+
+
+                        <div class="subject-meta">
+
+
+                            <span>
+
+                                {{ data.completed }}
+                                /
+                                {{ data.total }}
+
+                                tasks completed
+
+                            </span>
+
+
+                            <span class="view-details">
+                                View details →
+                            </span>
+
+
+                        </div>
+
+
+                    </div>
+
+
+                </a>
+
+
+            {% endfor %}
+
+
+        {% else %}
+
+
+            <div class="empty">
+
+                <div class="empty-icon">
+                    ◒
+                </div>
+
+
+                No subject data yet.
+
+                <br><br>
+
+                Add some tasks to start
+                tracking performance.
+
+            </div>
+
+
+        {% endif %}
+
+
+    </section>
+
+
+
+    <!-- =================================================
+         WEEKLY PROGRESS
+    ================================================= -->
+
+    <section class="week-card">
+
+
+        <div class="section-title">
+            Weekly Progress
+        </div>
+
+
+
+        {% if weekly_data %}
+
+
+            {% for week, data in weekly_data.items() %}
+
+
+                {% set week_progress = 0 %}
+
+
+                {% if data.total > 0 %}
+
+                    {% set week_progress =
+                        (
+                            data.completed
+                            /
+                            data.total
+                            *
+                            100
+                        ) | round
+                    %}
+
+                {% endif %}
+
+
+
+                <div class="week-row">
+
+
+                    <div class="week-name">
+
+                        Week
+                        {{ week[-2:] }}
+
+                    </div>
+
+
+
+                    <div class="week-bar">
+
+                        <div
+                            class="week-fill"
+                            style="
+                                width:
+                                {{ week_progress }}%;
+                            "
+                        ></div>
+
+                    </div>
+
+
+
+                    <div class="week-value">
+
+                        {{ week_progress }}%
+
+                    </div>
+
+
+                </div>
+
+
+            {% endfor %}
+
+
+        {% else %}
+
+
+            <div class="empty">
+
+                Weekly data will appear
+                as you add tasks.
+
+            </div>
+
+
+        {% endif %}
+
+
+    </section>
+
+
+</main>
+
+
+
+<!-- =====================================================
+     BOTTOM NAVIGATION
+===================================================== -->
+
+<nav class="bottom-nav">
+
+
+    <a
+        href="{{ url_for('home') }}"
+        class="nav-item"
+    >
+
+        <span>⌂</span>
+
+        <small>
+            Home
+        </small>
+
+    </a>
+
+
+
+    <a
+        href="{{ url_for('timetable') }}"
+        class="nav-item"
+    >
+
+        <span>▦</span>
+
+        <small>
+            Timetable
+        </small>
+
+    </a>
+
+
+
+    <a
+        href="{{ url_for('history') }}"
+        class="nav-item"
+    >
+
+        <span>◷</span>
+
+        <small>
+            History
+        </small>
+
+    </a>
+
+
+
+    <a
+        href="{{ url_for('analytics') }}"
+        class="nav-item active"
+    >
+
+        <span>◒</span>
+
+        <small>
+            Analytics
+        </small>
+
+    </a>
+
+
+</nav>
+
+
+</body>
+
+</html>
