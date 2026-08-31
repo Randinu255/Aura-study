@@ -748,6 +748,8 @@ def add_task():
 
         db.session.flush()
 
+
+
         # -------------------------------------------------
         # TASK
         # -------------------------------------------------
@@ -1180,6 +1182,50 @@ def timetable():
         timetable=timetable_items
     )
 
+# =========================================================
+# DELETE TIMETABLE SESSION
+# =========================================================
+
+@app.route(
+    "/delete-timetable/<int:item_id>",
+    methods=["POST"]
+)
+def delete_timetable(item_id):
+
+    user = current_user()
+
+    if not user:
+
+        return redirect(
+            url_for("login")
+        )
+
+    item = TimetableItem.query.filter_by(
+        id=item_id,
+        user_id=user.id
+    ).first_or_404()
+
+    task = Task.query.filter_by(
+        timetable_item_id=item.id,
+        user_id=user.id
+    ).first()
+
+    if task:
+
+        db.session.delete(task)
+
+    db.session.delete(item)
+
+    db.session.commit()
+
+    flash(
+        "Study session deleted successfully.",
+        "success"
+    )
+
+    return redirect(
+        url_for("timetable")
+    )
 
 # =========================================================
 # HISTORY

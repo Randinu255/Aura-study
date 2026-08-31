@@ -556,6 +556,65 @@
         white-space: nowrap;
     }
 
+/* =================================================
+   ITEM ACTIONS
+================================================= */
+
+.item-actions {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 8px;
+
+    flex-shrink: 0;
+}
+
+
+.delete-button {
+
+    width: 34px;
+
+    height: 34px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border: 1px solid
+        rgba(255,255,255,0.08);
+
+    border-radius: 9px;
+
+    background:
+        rgba(255,255,255,0.035);
+
+    color: #aeb5c7;
+
+    cursor: pointer;
+
+    font-size: 14px;
+
+    transition: 0.2s ease;
+}
+
+
+.delete-button:hover {
+
+    background:
+        rgba(255,80,80,0.12);
+
+    border-color:
+        rgba(255,100,100,0.25);
+
+    color: #ff8d8d;
+
+    transform:
+        translateY(-1px);
+}
 
     /* =================================================
        EMPTY
@@ -752,6 +811,15 @@
             margin-top:
                 -2px;
         }
+
+.item-actions {
+
+    grid-column: 2;
+
+    justify-content: flex-start;
+
+    margin-top: -2px;
+}
 
     }
 
@@ -959,17 +1027,36 @@
                             </div>
 
 
-                            {% if item.duration_minutes %}
+<div class="item-actions">
 
-                                <div class="duration">
+    {% if item.duration_minutes %}
 
-                                    {{ item.duration_minutes }}
-                                    min
+        <div class="duration">
 
-                                </div>
+            {{ item.duration_minutes }}
+            min
 
-                            {% endif %}
+        </div>
 
+    {% endif %}
+
+    <form
+        action="{{ url_for('delete_timetable', item_id=item.id) }}"
+        method="POST"
+        onsubmit="return confirm('Delete this study session?');"
+    >
+
+        <button
+            type="submit"
+            class="delete-button"
+            title="Delete study session"
+        >
+            🗑️
+        </button>
+
+    </form>
+
+</div>
 
                         </div>
 
