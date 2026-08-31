@@ -8,9 +8,18 @@ from flask import (
     flash
 )
 
-from database import db, User, Task, TimetableItem
+from database import (
+    db,
+    User,
+    Task,
+    TimetableItem,
+    TaskHistory,
+    WeeklyDay
+)
 
 from datetime import datetime, timedelta
+
+from sqlalchemy import inspect, text
 
 from werkzeug.security import (
     generate_password_hash,
@@ -36,17 +45,433 @@ app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get(
     "DATABASE_URL",
     "sqlite:///" + os.path.join(BASE_DIR, "aura.db")
 )
+
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 db.init_app(app)
 
 
 # =========================================================
-# DATABASE
+# DATABASE HELPERS
+# =========================================================
+
+def get_table_columns(table_name):
+
+    inspector = inspect(db.engine)
+
+    try:
+
+        return {
+            column["name"]
+            for column in inspector.get_columns(
+                table_name
+            )
+        }
+
+    except Exception:
+
+        return set()
+
+
+def add_column_if_missing(
+    table_name,
+    column_name,
+    column_definition
+):
+
+    columns = get_table_columns(
+        table_name
+    )
+
+    if column_name not in columns:
+
+        with db.engine.begin() as connection:
+
+            connection.execute(
+                text(
+                    f"ALTER TABLE {table_name} "
+                    f"ADD COLUMN {column_name} "
+                    f"{column_definition}"
+                )
+            )
+
+
+# =========================================================
+# DATABASE MIGRATION
+# =========================================================
+
+def migrate_database():
+
+    # -----------------------------------------------------
+    # CREATE TABLES
+    # -----------------------------------------------------
+
+    db.create_all()
+
+    # =====================================================
+    # TASKS
+    # =====================================================
+
+    task_columns = get_table_columns(
+        "tasks"
+    )
+
+    if "status" not in task_columns:
+
+        with db.engine.begin() as connection:
+
+            connection.execute(
+                text(
+                    "ALTER TABLE tasks "
+                    "ADD COLUMN status VARCHAR(20) "
+                    "DEFAULT 'pending'"
+                )
+            )
+
+    task_columns = get_table_columns(
+        "tasks"
+    )
+
+    if "completed_at" not in task_columns:
+
+        with db.engine.begin() as connection:
+
+            connection.execute(
+                text(
+                    "ALTER TABLE tasks "
+                    "ADD COLUMN completed_at DATETIME"
+                )
+            )
+
+    task_columns = get_table_columns(
+        "tasks"
+    )
+
+    if "weekday" not in task_columns:
+
+        with db.engine.begin() as connection:
+
+            connection.execute(
+                text(
+                    "ALTER TABLE tasks "
+                    "ADD COLUMN weekday INTEGER"
+                )
+            )
+
+    task_columns = get_table_columns(
+        "tasks"
+    )
+
+    if "is_active" not in task_columns:
+
+        with db.engine.begin() as connection:
+
+            connection.execute(
+                text(
+                    "ALTER TABLE tasks "
+                    "ADD COLUMN is_active BOOLEAN "
+                    "DEFAULT 1"
+                )
+            )
+
+    task_columns = get_table_columns(
+        "tasks"
+    )
+
+    # -----------------------------------------------------
+    # FIX OLD TASK DATA
+    # -----------------------------------------------------
+
+    with db.engine.begin() as connection:
+
+        if "completed" in task_columns:
+
+            connection.execute(
+                text(
+                    "UPDATE tasks "
+                    "SET status = 'done' "
+                    "WHERE completed = 1 "
+                    "AND (status IS NULL OR status = '')"
+                )
+            )
+
+            connection.execute(
+                text(
+                    "UPDATE tasks "
+                    "SET status = 'pending' "
+                    "WHERE (completed = 0 "
+                    "OR completed IS NULL) "
+                    "AND (status IS NULL OR status = '')"
+                )
+            )
+
+        connection.execute(
+            text(
+                "UPDATE tasks "
+                "SET status = 'pending' "
+                "WHERE status IS NULL "
+                "OR status = ''"
+            )
+        )
+
+        # -------------------------------------------------
+        # Convert old weekday strings to numbers
+        # -------------------------------------------------
+
+        weekday_map = {
+            "Monday": 0,
+            "Tuesday": 1,
+            "Wednesday": 2,
+            "Thursday": 3,
+            "Friday": 4,
+            "Saturday": 5,
+            "Sunday": 6
+        }
+
+        rows = connection.execute(
+            text(
+                "SELECT id, weekday, date "
+                "FROM tasks"
+            )
+        ).fetchall()
+
+        for row in rows:
+
+            new_weekday = None
+
+            if row.weekday is not None:
+
+                value = str(
+                    row.weekday
+                ).strip()
+
+                if value.isdigit():
+
+                    number = int(value)
+
+                    if 0 <= number <= 6:
+
+                        new_weekday = number
+
+                elif value in weekday_map:
+
+                    new_weekday = weekday_map[
+                        value
+                    ]
+
+            if new_weekday is None and row.date:
+
+                try:
+
+                    if isinstance(
+                        row.date,
+                        str
+                    ):
+
+                        task_date = datetime.strptime(
+                            row.date[:10],
+                            "%Y-%m-%d"
+                        ).date()
+
+                    else:
+
+                        task_date = row.date
+
+                    new_weekday = (
+                        task_date.weekday()
+                    )
+
+                except Exception:
+
+                    pass
+
+            if new_weekday is not None:
+
+                connection.execute(
+                    text(
+                        "UPDATE tasks "
+                        "SET weekday = :weekday "
+                        "WHERE id = :id"
+                    ),
+                    {
+                        "weekday": new_weekday,
+                        "id": row.id
+                    }
+                )
+
+        connection.execute(
+            text(
+                "UPDATE tasks "
+                "SET is_active = 1 "
+                "WHERE is_active IS NULL"
+            )
+        )
+
+    # =====================================================
+    # TIMETABLE ITEMS
+    # =====================================================
+
+    timetable_columns = get_table_columns(
+        "timetable_items"
+    )
+
+    if "weekday" not in timetable_columns:
+
+        with db.engine.begin() as connection:
+
+            connection.execute(
+                text(
+                    "ALTER TABLE timetable_items "
+                    "ADD COLUMN weekday INTEGER"
+                )
+            )
+
+    timetable_columns = get_table_columns(
+        "timetable_items"
+    )
+
+    if "is_active" not in timetable_columns:
+
+        with db.engine.begin() as connection:
+
+            connection.execute(
+                text(
+                    "ALTER TABLE timetable_items "
+                    "ADD COLUMN is_active BOOLEAN "
+                    "DEFAULT 1"
+                )
+            )
+
+    timetable_columns = get_table_columns(
+        "timetable_items"
+    )
+
+    if "created_at" not in timetable_columns:
+
+        with db.engine.begin() as connection:
+
+            connection.execute(
+                text(
+                    "ALTER TABLE timetable_items "
+                    "ADD COLUMN created_at DATETIME"
+                )
+            )
+
+    timetable_columns = get_table_columns(
+        "timetable_items"
+    )
+
+    # -----------------------------------------------------
+    # FIX OLD TIMETABLE DATA
+    # -----------------------------------------------------
+
+    with db.engine.begin() as connection:
+
+        weekday_map = {
+            "Monday": 0,
+            "Tuesday": 1,
+            "Wednesday": 2,
+            "Thursday": 3,
+            "Friday": 4,
+            "Saturday": 5,
+            "Sunday": 6
+        }
+
+        rows = connection.execute(
+            text(
+                "SELECT id, weekday, date "
+                "FROM timetable_items"
+            )
+        ).fetchall()
+
+        for row in rows:
+
+            new_weekday = None
+
+            if row.weekday is not None:
+
+                value = str(
+                    row.weekday
+                ).strip()
+
+                if value.isdigit():
+
+                    number = int(value)
+
+                    if 0 <= number <= 6:
+
+                        new_weekday = number
+
+                elif value in weekday_map:
+
+                    new_weekday = weekday_map[
+                        value
+                    ]
+
+            if new_weekday is None and row.date:
+
+                try:
+
+                    if isinstance(
+                        row.date,
+                        str
+                    ):
+
+                        item_date = datetime.strptime(
+                            row.date[:10],
+                            "%Y-%m-%d"
+                        ).date()
+
+                    else:
+
+                        item_date = row.date
+
+                    new_weekday = (
+                        item_date.weekday()
+                    )
+
+                except Exception:
+
+                    pass
+
+            if new_weekday is not None:
+
+                connection.execute(
+                    text(
+                        "UPDATE timetable_items "
+                        "SET weekday = :weekday "
+                        "WHERE id = :id"
+                    ),
+                    {
+                        "weekday": new_weekday,
+                        "id": row.id
+                    }
+                )
+
+        connection.execute(
+            text(
+                "UPDATE timetable_items "
+                "SET is_active = 1 "
+                "WHERE is_active IS NULL"
+            )
+        )
+
+        connection.execute(
+            text(
+                "UPDATE timetable_items "
+                "SET created_at = CURRENT_TIMESTAMP "
+                "WHERE created_at IS NULL"
+            )
+        )
+
+
+# =========================================================
+# RUN MIGRATION
 # =========================================================
 
 with app.app_context():
-    db.create_all()
+
+    migrate_database()
 
 
 # =========================================================
@@ -55,12 +480,257 @@ with app.app_context():
 
 def current_user():
 
-    user_id = session.get("user_id")
+    user_id = session.get(
+        "user_id"
+    )
 
     if not user_id:
+
         return None
 
-    return User.query.get(user_id)
+    return db.session.get(
+        User,
+        user_id
+    )
+
+
+# =========================================================
+# WEEK HELPERS
+# =========================================================
+
+def get_current_week():
+
+    today = datetime.now().date()
+
+    monday = (
+        today
+        - timedelta(
+            days=today.weekday()
+        )
+    )
+
+    sunday = (
+        monday
+        + timedelta(days=6)
+    )
+
+    return monday, sunday
+
+
+def get_week_dates():
+
+    monday, sunday = (
+        get_current_week()
+    )
+
+    return [
+        monday + timedelta(days=i)
+        for i in range(7)
+    ]
+
+
+# =========================================================
+# WEEKLY AUTO ARCHIVE
+# =========================================================
+#
+# Every request checks for active tasks belonging to
+# previous weeks.
+#
+# Sunday ends -> Monday arrives -> previous week gets
+# archived automatically.
+#
+# Nothing is hard deleted.
+#
+# TaskHistory receives a permanent snapshot.
+#
+# Original Task + TimetableItem become inactive.
+#
+# =========================================================
+
+def archive_expired_weeks(user):
+
+    if not user:
+
+        return
+
+    current_monday, _ = (
+        get_current_week()
+    )
+
+    old_tasks = Task.query.filter(
+        Task.user_id == user.id,
+        Task.is_active == True,
+        Task.date < current_monday
+    ).all()
+
+    if not old_tasks:
+
+        return
+
+    changed = False
+
+    for task in old_tasks:
+
+        # -------------------------------------------------
+        # DUPLICATE PROTECTION
+        # -------------------------------------------------
+
+        existing_history = TaskHistory.query.filter_by(
+            user_id=user.id,
+            original_task_id=task.id
+        ).first()
+
+        # -------------------------------------------------
+        # FIND TIMETABLE ITEM
+        # -------------------------------------------------
+
+        timetable_item = None
+
+        if task.timetable_item_id:
+
+            timetable_item = TimetableItem.query.filter_by(
+                id=task.timetable_item_id,
+                user_id=user.id
+            ).first()
+
+        # -------------------------------------------------
+        # CREATE HISTORY SNAPSHOT
+        # -------------------------------------------------
+
+        if not existing_history:
+
+            history = TaskHistory(
+                user_id=user.id,
+
+                original_task_id=task.id,
+
+                timetable_item_id=(
+                    timetable_item.id
+                    if timetable_item
+                    else task.timetable_item_id
+                ),
+
+                date=task.date,
+
+                weekday=(
+                    task.weekday
+                    if task.weekday is not None
+                    else task.date.weekday()
+                ),
+
+                subject=task.subject,
+
+                title=task.title,
+
+                start_time=(
+                    timetable_item.start_time
+                    if timetable_item
+                    else None
+                ),
+
+                end_time=(
+                    timetable_item.end_time
+                    if timetable_item
+                    else None
+                ),
+
+                duration_minutes=(
+                    timetable_item.duration_minutes
+                    if timetable_item
+                    else None
+                ),
+
+                status=(
+                    task.status
+                    if task.status
+                    else "pending"
+                ),
+
+                completed_at=task.completed_at,
+
+                archived_at=datetime.utcnow(),
+
+                notes=(
+                    timetable_item.notes
+                    if timetable_item
+                    else None
+                )
+            )
+
+            db.session.add(
+                history
+            )
+
+        # -------------------------------------------------
+        # ARCHIVE ORIGINAL TASK
+        # -------------------------------------------------
+
+        task.is_active = False
+
+        # -------------------------------------------------
+        # ARCHIVE TIMETABLE ITEM
+        # -------------------------------------------------
+
+        if timetable_item:
+
+            timetable_item.is_active = False
+
+        changed = True
+
+    # -----------------------------------------------------
+    # REMOVE OLD WEEK DAY MAPS
+    # -----------------------------------------------------
+
+    old_week_days = WeeklyDay.query.filter(
+        WeeklyDay.user_id == user.id,
+        WeeklyDay.week_start < current_monday
+    ).all()
+
+    for day in old_week_days:
+
+        db.session.delete(day)
+
+        changed = True
+
+    if changed:
+
+        db.session.commit()
+
+
+# =========================================================
+# AUTO ARCHIVE FOR LOGGED USER
+# =========================================================
+
+@app.before_request
+def automatic_weekly_archive():
+
+    endpoint = request.endpoint
+
+    # -----------------------------------------------------
+    # Skip static / auth pages
+    # -----------------------------------------------------
+
+    if endpoint in {
+        "login",
+        "register",
+        "static"
+    }:
+
+        return
+
+    user = current_user()
+
+    if user:
+
+        try:
+
+            archive_expired_weeks(
+                user
+            )
+
+        except Exception:
+
+            db.session.rollback()
 
 
 # =========================================================
@@ -73,109 +743,109 @@ def home():
     user = current_user()
 
     if not user:
-        return redirect(url_for("login"))
+
+        return redirect(
+            url_for("login")
+        )
 
     today = datetime.now().date()
 
     tasks = Task.query.filter_by(
         user_id=user.id,
-        date=today
+        date=today,
+        is_active=True
     ).order_by(
-        Task.completed.asc(),
         Task.id.asc()
     ).all()
 
-    # -----------------------------------------------------
-    # BASIC TASK STATS
-    # -----------------------------------------------------
+    # =====================================================
+    # BASIC STATS
+    # =====================================================
 
     total_tasks = len(tasks)
 
     completed_tasks = sum(
         1
         for task in tasks
-        if task.completed
+        if task.status == "done"
     )
 
-    remaining_tasks = total_tasks - completed_tasks
+    remaining_tasks = (
+        total_tasks
+        - completed_tasks
+    )
 
     progress = 0
 
     if total_tasks > 0:
 
         progress = round(
-            completed_tasks / total_tasks * 100
+            completed_tasks
+            / total_tasks
+            * 100
         )
 
-    # -----------------------------------------------------
-    # TODAY'S PLANNED STUDY TIME
-    # -----------------------------------------------------
+    # =====================================================
+    # STUDY TIME
+    # =====================================================
 
     study_minutes = 0
 
+    completed_minutes = 0
+
     for task in tasks:
 
-        if task.timetable_item_id:
+        if not task.timetable_item_id:
 
-            item = TimetableItem.query.filter_by(
-                id=task.timetable_item_id,
-                user_id=user.id
-            ).first()
+            continue
 
-            if item:
+        item = TimetableItem.query.filter_by(
+            id=task.timetable_item_id,
+            user_id=user.id
+        ).first()
 
-                study_minutes += (
-                    item.duration_minutes or 0
-                )
+        if not item:
+
+            continue
+
+        study_minutes += (
+            item.duration_minutes or 0
+        )
+
+        if task.status == "done":
+
+            completed_minutes += (
+                item.duration_minutes or 0
+            )
 
     study_hours = round(
         study_minutes / 60,
         1
     )
 
-    # -----------------------------------------------------
-    # COMPLETED STUDY TIME
-    # -----------------------------------------------------
-
-    completed_minutes = 0
-
-    for task in tasks:
-
-        if (
-            task.completed
-            and task.timetable_item_id
-        ):
-
-            item = TimetableItem.query.filter_by(
-                id=task.timetable_item_id,
-                user_id=user.id
-            ).first()
-
-            if item:
-
-                completed_minutes += (
-                    item.duration_minutes or 0
-                )
-
     completed_hours = round(
         completed_minutes / 60,
         1
     )
 
-    # -----------------------------------------------------
-    # CURRENT STREAK
-    # -----------------------------------------------------
+    # =====================================================
+    # STREAK
+    # =====================================================
 
     completed_dates = set()
 
     completed_tasks_all = Task.query.filter_by(
         user_id=user.id,
-        completed=True
+        status="done"
     ).all()
 
     for task in completed_tasks_all:
 
-        completed_dates.add(task.date)
+        if task.date:
+
+            completed_dates.add(
+                task.date
+            )
 
     streak = 0
 
@@ -185,17 +855,19 @@ def home():
 
         streak += 1
 
-        check_date = (
-            check_date - timedelta(days=1)
+        check_date -= timedelta(
+            days=1
         )
 
-    # -----------------------------------------------------
+    # =====================================================
     # AURA INTELLIGENCE
-    # -----------------------------------------------------
+    # =====================================================
 
     if total_tasks == 0:
 
-        intelligence_title = "Your day is ready."
+        intelligence_title = (
+            "Your day is ready."
+        )
 
         intelligence_message = (
             "Add your study tasks and start your mission."
@@ -203,7 +875,9 @@ def home():
 
     elif progress == 100:
 
-        intelligence_title = "Mission complete! 🏆"
+        intelligence_title = (
+            "Mission complete! 🏆"
+        )
 
         intelligence_message = (
             "You completed everything planned for today."
@@ -211,7 +885,9 @@ def home():
 
     elif progress >= 75:
 
-        intelligence_title = "Almost there! 🔥"
+        intelligence_title = (
+            "Almost there! 🔥"
+        )
 
         intelligence_message = (
             f"You've completed {progress}% of today's plan. "
@@ -220,7 +896,9 @@ def home():
 
     elif progress >= 50:
 
-        intelligence_title = "Good progress."
+        intelligence_title = (
+            "Good progress."
+        )
 
         intelligence_message = (
             f"You've completed {progress}% of today's plan. "
@@ -229,15 +907,18 @@ def home():
 
     else:
 
-        intelligence_title = "Let's get started."
-
-        intelligence_message = (
-            f"You have {remaining_tasks} tasks remaining today."
+        intelligence_title = (
+            "Let's get started."
         )
 
-    # -----------------------------------------------------
+        intelligence_message = (
+            f"You have {remaining_tasks} "
+            "tasks remaining today."
+        )
+
+    # =====================================================
     # SUBJECT PERFORMANCE
-    # -----------------------------------------------------
+    # =====================================================
 
     subject_data = {}
 
@@ -263,7 +944,7 @@ def home():
 
         subject_data[subject]["total"] += 1
 
-        if task.completed:
+        if task.status == "done":
 
             subject_data[subject]["completed"] += 1
 
@@ -277,38 +958,106 @@ def home():
                 * 100
             )
 
-    # -----------------------------------------------------
-    # NEXT TASK
-    # -----------------------------------------------------
+    # =====================================================
+    # NEXT UP
+    # =====================================================
+
+    now = datetime.now()
+
+    current_time = now.time()
 
     next_task = None
 
+    current_task = None
+
+    future_tasks = []
+
     for task in tasks:
 
-        if not task.completed:
+        if (
+            task.status != "pending"
+            or not task.timetable_item_id
+        ):
 
-            next_task = task
+            continue
 
-            break
+        item = TimetableItem.query.filter_by(
+            id=task.timetable_item_id,
+            user_id=user.id
+        ).first()
 
-    # -----------------------------------------------------
-    # RENDER DASHBOARD
-    # -----------------------------------------------------
+        if not item:
+
+            continue
+
+        try:
+
+            start = datetime.strptime(
+                item.start_time,
+                "%H:%M"
+            ).time()
+
+            end = datetime.strptime(
+                item.end_time,
+                "%H:%M"
+            ).time()
+
+        except (
+            ValueError,
+            TypeError
+        ):
+
+            continue
+
+        if start <= current_time < end:
+
+            current_task = task
+
+        elif current_time < start:
+
+            future_tasks.append(
+                (start, task)
+            )
+
+    if current_task:
+
+        next_task = current_task
+
+    elif future_tasks:
+
+        future_tasks.sort(
+            key=lambda x: x[0]
+        )
+
+        next_task = future_tasks[0][1]
 
     return render_template(
         "dashboard.html",
+
         user=user,
+
         tasks=tasks,
+
         total_tasks=total_tasks,
+
         completed_tasks=completed_tasks,
+
         remaining_tasks=remaining_tasks,
+
         progress=progress,
+
         study_hours=study_hours,
+
         completed_hours=completed_hours,
+
         streak=streak,
+
         intelligence_title=intelligence_title,
+
         intelligence_message=intelligence_message,
+
         next_task=next_task,
+
         subject_data=subject_data
     )
 
@@ -355,10 +1104,6 @@ def register():
             "confirm_password",
             ""
         )
-
-        # -------------------------------------------------
-        # VALIDATION
-        # -------------------------------------------------
 
         if not name:
 
@@ -415,10 +1160,6 @@ def register():
                 url_for("register")
             )
 
-        # -------------------------------------------------
-        # DUPLICATE USERNAME
-        # -------------------------------------------------
-
         existing_username = User.query.filter_by(
             username=username
         ).first()
@@ -433,10 +1174,6 @@ def register():
             return redirect(
                 url_for("register")
             )
-
-        # -------------------------------------------------
-        # DUPLICATE EMAIL
-        # -------------------------------------------------
 
         existing_email = User.query.filter_by(
             email=email
@@ -453,19 +1190,13 @@ def register():
                 url_for("register")
             )
 
-        # -------------------------------------------------
-        # CREATE USER
-        # -------------------------------------------------
-
-        password_hash = generate_password_hash(
-            password
-        )
-
         user = User(
             name=name,
             username=username,
             email=email,
-            password_hash=password_hash,
+            password_hash=generate_password_hash(
+                password
+            ),
             email_verified=True
         )
 
@@ -591,6 +1322,15 @@ def add_task():
             url_for("login")
         )
 
+    # -----------------------------------------------------
+    # PRESELECTED DATE
+    # -----------------------------------------------------
+
+    preselected_date = request.args.get(
+        "date",
+        ""
+    )
+
     if request.method == "POST":
 
         date_string = request.form.get(
@@ -627,10 +1367,6 @@ def add_task():
             "notes",
             ""
         ).strip()
-
-        # -------------------------------------------------
-        # VALIDATION
-        # -------------------------------------------------
 
         if not date_string:
 
@@ -675,10 +1411,6 @@ def add_task():
             return redirect(
                 url_for("add_task")
             )
-
-        # -------------------------------------------------
-        # DATE / TIME
-        # -------------------------------------------------
 
         try:
 
@@ -726,9 +1458,7 @@ def add_task():
                 url_for("add_task")
             )
 
-        # -------------------------------------------------
-        # TIMETABLE ITEM
-        # -------------------------------------------------
+        weekday = task_date.weekday()
 
         timetable_item = TimetableItem(
             user_id=user.id,
@@ -739,7 +1469,10 @@ def add_task():
             end_time=end_time,
             duration_minutes=duration,
             priority=priority,
-            notes=notes
+            notes=notes,
+            weekday=weekday,
+            is_active=True,
+            created_at=datetime.utcnow()
         )
 
         db.session.add(
@@ -748,17 +1481,17 @@ def add_task():
 
         db.session.flush()
 
-        # -------------------------------------------------
-        # TASK
-        # -------------------------------------------------
-
         task = Task(
             user_id=user.id,
             timetable_item_id=timetable_item.id,
             date=task_date,
             subject=subject,
             title=title,
-            completed=False
+            completed=False,
+            status="pending",
+            weekday=weekday,
+            is_active=True,
+            created_at=datetime.utcnow()
         )
 
         db.session.add(task)
@@ -770,12 +1503,414 @@ def add_task():
             "success"
         )
 
+        # -------------------------------------------------
+        # RETURN TO TIMETABLE IF DATE WAS PROVIDED
+        # -------------------------------------------------
+
         return redirect(
-            url_for("home")
+            url_for("timetable")
         )
 
     return render_template(
-        "add_task.html"
+        "add_task.html",
+        preselected_date=preselected_date
+    )
+
+
+# =========================================================
+# SET WEEKLY DAY DATE
+# =========================================================
+
+@app.route(
+    "/set-weekly-date/<int:weekday>",
+    methods=["POST"]
+)
+def set_weekly_date(weekday):
+
+    user = current_user()
+
+    if not user:
+
+        return redirect(
+            url_for("login")
+        )
+
+    if weekday < 0 or weekday > 6:
+
+        flash(
+            "Invalid weekday.",
+            "error"
+        )
+
+        return redirect(
+            url_for("timetable")
+        )
+
+    date_string = request.form.get(
+        "selected_date",
+        ""
+    ).strip()
+
+    if not date_string:
+
+        flash(
+            "Please select a date.",
+            "error"
+        )
+
+        return redirect(
+            url_for("timetable")
+        )
+
+    try:
+
+        selected_date = datetime.strptime(
+            date_string,
+            "%Y-%m-%d"
+        ).date()
+
+    except ValueError:
+
+        flash(
+            "Invalid date.",
+            "error"
+        )
+
+        return redirect(
+            url_for("timetable")
+        )
+
+    # -----------------------------------------------------
+    # DATE MUST MATCH THE SELECTED WEEKDAY
+    # -----------------------------------------------------
+
+    if selected_date.weekday() != weekday:
+
+        flash(
+            "Please select a date that matches this day.",
+            "error"
+        )
+
+        return redirect(
+            url_for("timetable")
+        )
+
+    week_start, week_end = (
+        get_current_week()
+    )
+
+    # -----------------------------------------------------
+    # KEEP THE DATE INSIDE CURRENT WEEK
+    # -----------------------------------------------------
+
+    if not (
+        week_start
+        <= selected_date
+        <= week_end
+    ):
+
+        flash(
+            "Please select a date inside the current week.",
+            "error"
+        )
+
+        return redirect(
+            url_for("timetable")
+        )
+
+    existing = WeeklyDay.query.filter_by(
+        user_id=user.id,
+        week_start=week_start,
+        weekday=weekday
+    ).first()
+
+    if existing:
+
+        existing.selected_date = selected_date
+
+    else:
+
+        weekly_day = WeeklyDay(
+            user_id=user.id,
+            week_start=week_start,
+            weekday=weekday,
+            selected_date=selected_date,
+            created_at=datetime.utcnow()
+        )
+
+        db.session.add(
+            weekly_day
+        )
+
+    db.session.commit()
+
+    flash(
+        f"{selected_date.strftime('%A')} date saved.",
+        "success"
+    )
+
+    return redirect(
+        url_for("timetable")
+    )
+
+
+# =========================================================
+# ADD TASK DIRECTLY FROM WEEKLY TIMETABLE
+# =========================================================
+
+@app.route(
+    "/weekly-add-task",
+    methods=["POST"]
+)
+def weekly_add_task():
+
+    user = current_user()
+
+    if not user:
+
+        return redirect(
+            url_for("login")
+        )
+
+    date_string = request.form.get(
+        "date",
+        ""
+    ).strip()
+
+    subject = request.form.get(
+        "subject",
+        ""
+    ).strip()
+
+    title = request.form.get(
+        "title",
+        ""
+    ).strip()
+
+    start_time = request.form.get(
+        "start_time",
+        ""
+    ).strip()
+
+    end_time = request.form.get(
+        "end_time",
+        ""
+    ).strip()
+
+    priority = request.form.get(
+        "priority",
+        "normal"
+    ).strip()
+
+    notes = request.form.get(
+        "notes",
+        ""
+    ).strip()
+
+    # -----------------------------------------------------
+    # VALIDATION
+    # -----------------------------------------------------
+
+    if not date_string:
+
+        flash(
+            "Please set the day date first.",
+            "error"
+        )
+
+        return redirect(
+            url_for("timetable")
+        )
+
+    if not subject:
+
+        flash(
+            "Please enter a subject.",
+            "error"
+        )
+
+        return redirect(
+            url_for("timetable")
+        )
+
+    if not title:
+
+        flash(
+            "Please enter a task title.",
+            "error"
+        )
+
+        return redirect(
+            url_for("timetable")
+        )
+
+    if not start_time or not end_time:
+
+        flash(
+            "Please select start and end times.",
+            "error"
+        )
+
+        return redirect(
+            url_for("timetable")
+        )
+
+    try:
+
+        task_date = datetime.strptime(
+            date_string,
+            "%Y-%m-%d"
+        ).date()
+
+        start = datetime.strptime(
+            start_time,
+            "%H:%M"
+        )
+
+        end = datetime.strptime(
+            end_time,
+            "%H:%M"
+        )
+
+    except ValueError:
+
+        flash(
+            "Invalid date or time.",
+            "error"
+        )
+
+        return redirect(
+            url_for("timetable")
+        )
+
+    # -----------------------------------------------------
+    # VERIFY DATE BELONGS TO CURRENT WEEK
+    # -----------------------------------------------------
+
+    week_start, week_end = (
+        get_current_week()
+    )
+
+    if not (
+        week_start
+        <= task_date
+        <= week_end
+    ):
+
+        flash(
+            "This date is outside the current week.",
+            "error"
+        )
+
+        return redirect(
+            url_for("timetable")
+        )
+
+    # -----------------------------------------------------
+    # VERIFY DATE WAS SET FOR ITS DAY
+    # -----------------------------------------------------
+
+    weekly_day = WeeklyDay.query.filter_by(
+        user_id=user.id,
+        week_start=week_start,
+        weekday=task_date.weekday()
+    ).first()
+
+    if not weekly_day:
+
+        flash(
+            "Please set the date for this day first.",
+            "error"
+        )
+
+        return redirect(
+            url_for("timetable")
+        )
+
+    if weekly_day.selected_date != task_date:
+
+        flash(
+            "The selected date does not match this day.",
+            "error"
+        )
+
+        return redirect(
+            url_for("timetable")
+        )
+
+    duration = int(
+        (
+            end - start
+        ).total_seconds()
+        / 60
+    )
+
+    if duration <= 0:
+
+        flash(
+            "End time must be after start time.",
+            "error"
+        )
+
+        return redirect(
+            url_for("timetable")
+        )
+
+    weekday = task_date.weekday()
+
+    # =====================================================
+    # CREATE TIMETABLE ITEM
+    # =====================================================
+
+    timetable_item = TimetableItem(
+        user_id=user.id,
+        date=task_date,
+        subject=subject,
+        title=title,
+        start_time=start_time,
+        end_time=end_time,
+        duration_minutes=duration,
+        priority=priority,
+        notes=notes,
+        weekday=weekday,
+        is_active=True,
+        created_at=datetime.utcnow()
+    )
+
+    db.session.add(
+        timetable_item
+    )
+
+    db.session.flush()
+
+    # =====================================================
+    # CREATE TASK
+    # =====================================================
+
+    task = Task(
+        user_id=user.id,
+        timetable_item_id=timetable_item.id,
+        date=task_date,
+        subject=subject,
+        title=title,
+        completed=False,
+        status="pending",
+        weekday=weekday,
+        is_active=True,
+        created_at=datetime.utcnow()
+    )
+
+    db.session.add(task)
+
+    db.session.commit()
+
+    flash(
+        "Study task added to your timetable.",
+        "success"
+    )
+
+    return redirect(
+        url_for("timetable")
     )
 
 
@@ -848,10 +1983,6 @@ def edit_task(task_id):
             ""
         ).strip()
 
-        # -------------------------------------------------
-        # VALIDATION
-        # -------------------------------------------------
-
         if not date_string:
 
             flash(
@@ -908,10 +2039,6 @@ def edit_task(task_id):
                 )
             )
 
-        # -------------------------------------------------
-        # DATE / TIME
-        # -------------------------------------------------
-
         try:
 
             task_date = datetime.strptime(
@@ -964,17 +2091,13 @@ def edit_task(task_id):
                 )
             )
 
-        # -------------------------------------------------
-        # UPDATE TASK
-        # -------------------------------------------------
+        weekday = task_date.weekday()
 
         task.date = task_date
         task.subject = subject
         task.title = title
-
-        # -------------------------------------------------
-        # UPDATE TIMETABLE ITEM
-        # -------------------------------------------------
+        task.weekday = weekday
+        task.is_active = True
 
         if timetable_item:
 
@@ -986,6 +2109,8 @@ def edit_task(task_id):
             timetable_item.duration_minutes = duration
             timetable_item.priority = priority
             timetable_item.notes = notes
+            timetable_item.weekday = weekday
+            timetable_item.is_active = True
 
         else:
 
@@ -998,7 +2123,10 @@ def edit_task(task_id):
                 end_time=end_time,
                 duration_minutes=duration,
                 priority=priority,
-                notes=notes
+                notes=notes,
+                weekday=weekday,
+                is_active=True,
+                created_at=datetime.utcnow()
             )
 
             db.session.add(
@@ -1007,7 +2135,9 @@ def edit_task(task_id):
 
             db.session.flush()
 
-            task.timetable_item_id = timetable_item.id
+            task.timetable_item_id = (
+                timetable_item.id
+            )
 
         db.session.commit()
 
@@ -1102,15 +2232,10 @@ def complete_task(task_id):
         user_id=user.id
     ).first_or_404()
 
-    if task.completed:
-
-        return redirect(
-            url_for("home")
-        )
-
+    task.status = "done"
     task.completed = True
-
     task.completed_at = datetime.utcnow()
+    task.is_active = True
 
     db.session.commit()
 
@@ -1142,9 +2267,10 @@ def uncomplete_task(task_id):
         user_id=user.id
     ).first_or_404()
 
+    task.status = "pending"
     task.completed = False
-
     task.completed_at = None
+    task.is_active = True
 
     db.session.commit()
 
@@ -1154,7 +2280,42 @@ def uncomplete_task(task_id):
 
 
 # =========================================================
-# TIMETABLE
+# MARK TASK AS NOT DONE
+# =========================================================
+
+@app.route(
+    "/not-done-task/<int:task_id>",
+    methods=["POST"]
+)
+def not_done_task(task_id):
+
+    user = current_user()
+
+    if not user:
+
+        return redirect(
+            url_for("login")
+        )
+
+    task = Task.query.filter_by(
+        id=task_id,
+        user_id=user.id
+    ).first_or_404()
+
+    task.status = "not_done"
+    task.completed = False
+    task.completed_at = None
+    task.is_active = True
+
+    db.session.commit()
+
+    return redirect(
+        url_for("home")
+    )
+
+
+# =========================================================
+# TIMETABLE — CURRENT WEEK
 # =========================================================
 
 @app.route("/timetable")
@@ -1168,16 +2329,154 @@ def timetable():
             url_for("login")
         )
 
-    timetable_items = TimetableItem.query.filter_by(
-        user_id=user.id
+    # -----------------------------------------------------
+    # CURRENT WEEK
+    # -----------------------------------------------------
+
+    monday, sunday = get_current_week()
+
+    week_dates = get_week_dates()
+
+    # -----------------------------------------------------
+    # CURRENT WEEK ACTIVE ITEMS
+    # -----------------------------------------------------
+
+    timetable_items = TimetableItem.query.filter(
+        TimetableItem.user_id == user.id,
+        TimetableItem.date >= monday,
+        TimetableItem.date <= sunday,
+        TimetableItem.is_active == True
     ).order_by(
         TimetableItem.date.asc(),
         TimetableItem.start_time.asc()
     ).all()
 
+    # -----------------------------------------------------
+    # SAVED WEEK DAYS
+    # -----------------------------------------------------
+
+    saved_days = WeeklyDay.query.filter_by(
+        user_id=user.id,
+        week_start=monday
+    ).all()
+
+    saved_day_map = {
+        day.weekday: day
+        for day in saved_days
+    }
+
+    # -----------------------------------------------------
+    # CREATE 7 DAY STRUCTURE
+    # -----------------------------------------------------
+
+    weekly_timetable = []
+
+    for weekday in range(7):
+
+        calendar_date = (
+            monday
+            + timedelta(days=weekday)
+        )
+
+        saved_day = saved_day_map.get(
+            weekday
+        )
+
+        selected_date = (
+            saved_day.selected_date
+            if saved_day
+            else None
+        )
+
+        # -------------------------------------------------
+        # ONLY SHOW TASKS FOR SELECTED DATE
+        # -------------------------------------------------
+
+        day_items = []
+
+        if selected_date:
+
+            day_items = [
+                item
+                for item in timetable_items
+                if item.date == selected_date
+            ]
+
+        weekly_timetable.append({
+
+            "weekday": weekday,
+
+            "date": selected_date,
+
+            "calendar_date": calendar_date,
+
+            "day_name": calendar_date.strftime(
+                "%A"
+            ),
+
+            "items": day_items,
+
+            "is_set": (
+                selected_date is not None
+            )
+        })
+
     return render_template(
         "timetable.html",
-        timetable=timetable_items
+
+        timetable=timetable_items,
+
+        weekly_timetable=weekly_timetable,
+
+        week_start=monday,
+
+        week_end=sunday
+    )
+
+
+# =========================================================
+# DELETE TIMETABLE SESSION
+# =========================================================
+
+@app.route(
+    "/delete-timetable/<int:item_id>",
+    methods=["POST"]
+)
+def delete_timetable(item_id):
+
+    user = current_user()
+
+    if not user:
+
+        return redirect(
+            url_for("login")
+        )
+
+    item = TimetableItem.query.filter_by(
+        id=item_id,
+        user_id=user.id
+    ).first_or_404()
+
+    task = Task.query.filter_by(
+        timetable_item_id=item.id,
+        user_id=user.id
+    ).first()
+
+    if task:
+
+        db.session.delete(task)
+
+    db.session.delete(item)
+
+    db.session.commit()
+
+    flash(
+        "Study session deleted successfully.",
+        "success"
+    )
+
+    return redirect(
+        url_for("timetable")
     )
 
 
@@ -1196,16 +2495,76 @@ def history():
             url_for("login")
         )
 
-    tasks = Task.query.filter_by(
-        user_id=user.id
-    ).order_by(
-        Task.date.desc(),
-        Task.id.desc()
-    ).all()
-
     history_data = {}
 
-    for task in tasks:
+    # -----------------------------------------------------
+    # NEW HISTORY RECORDS
+    # -----------------------------------------------------
+
+    history_records = TaskHistory.query.filter_by(
+        user_id=user.id
+    ).order_by(
+        TaskHistory.date.desc(),
+        TaskHistory.id.desc()
+    ).all()
+
+    for record in history_records:
+
+        date_key = record.date
+
+        if date_key not in history_data:
+
+            history_data[date_key] = {
+                "total": 0,
+                "completed": 0,
+                "not_done": 0,
+                "pending": 0
+            }
+
+        history_data[date_key]["total"] += 1
+
+        if record.status == "done":
+
+            history_data[date_key]["completed"] += 1
+
+        elif record.status == "not_done":
+
+            history_data[date_key]["not_done"] += 1
+
+        else:
+
+            history_data[date_key]["pending"] += 1
+
+    # -----------------------------------------------------
+    # LEGACY TASKS THAT WERE NEVER ARCHIVED
+    # -----------------------------------------------------
+
+    legacy_tasks = Task.query.filter_by(
+        user_id=user.id
+    ).all()
+
+    archived_ids = {
+        record.original_task_id
+        for record in history_records
+        if record.original_task_id is not None
+    }
+
+    for task in legacy_tasks:
+
+        if task.id in archived_ids:
+
+            continue
+
+        # Current active tasks should not be counted
+        # as history.
+
+        if task.is_active:
+
+            continue
+
+        if not task.date:
+
+            continue
 
         date_key = task.date
 
@@ -1213,14 +2572,24 @@ def history():
 
             history_data[date_key] = {
                 "total": 0,
-                "completed": 0
+                "completed": 0,
+                "not_done": 0,
+                "pending": 0
             }
 
         history_data[date_key]["total"] += 1
 
-        if task.completed:
+        if task.status == "done":
 
             history_data[date_key]["completed"] += 1
+
+        elif task.status == "not_done":
+
+            history_data[date_key]["not_done"] += 1
+
+        else:
+
+            history_data[date_key]["pending"] += 1
 
     return render_template(
         "history.html",
@@ -1243,10 +2612,6 @@ def analytics():
             url_for("login")
         )
 
-    # -----------------------------------------------------
-    # ALL USER TASKS
-    # -----------------------------------------------------
-
     tasks = Task.query.filter_by(
         user_id=user.id
     ).order_by(
@@ -1259,11 +2624,12 @@ def analytics():
     completed_tasks = sum(
         1
         for task in tasks
-        if task.completed
+        if task.status == "done"
     )
 
     remaining_tasks = (
-        total_tasks - completed_tasks
+        total_tasks
+        - completed_tasks
     )
 
     overall_progress = 0
@@ -1276,9 +2642,9 @@ def analytics():
             * 100
         )
 
-    # -----------------------------------------------------
+    # =====================================================
     # SUBJECT DATA
-    # -----------------------------------------------------
+    # =====================================================
 
     subject_data = {}
 
@@ -1300,27 +2666,23 @@ def analytics():
 
         subject_data[subject]["total"] += 1
 
-        if task.completed:
+        if task.status == "done":
 
             subject_data[subject]["completed"] += 1
 
     for subject, data in subject_data.items():
 
-        total = data["total"]
-
-        completed = data["completed"]
-
-        if total > 0:
+        if data["total"] > 0:
 
             data["progress"] = round(
-                completed
-                / total
+                data["completed"]
+                / data["total"]
                 * 100
             )
 
-    # -----------------------------------------------------
+    # =====================================================
     # BEST SUBJECT
-    # -----------------------------------------------------
+    # =====================================================
 
     best_subject = None
 
@@ -1338,13 +2700,17 @@ def analytics():
             best_subject
         ]["progress"]
 
-    # -----------------------------------------------------
+    # =====================================================
     # WEEKLY DATA
-    # -----------------------------------------------------
+    # =====================================================
 
     weekly_data = {}
 
     for task in tasks:
+
+        if not task.date:
+
+            continue
 
         week_key = task.date.strftime(
             "%Y-%W"
@@ -1360,7 +2726,7 @@ def analytics():
 
         weekly_data[week_key]["total"] += 1
 
-        if task.completed:
+        if task.status == "done":
 
             weekly_data[week_key]["completed"] += 1
 
@@ -1378,16 +2744,16 @@ def analytics():
                 * 100
             )
 
-    # -----------------------------------------------------
+    # =====================================================
     # STUDY TIME
-    # -----------------------------------------------------
+    # =====================================================
 
     study_minutes = 0
 
     for task in tasks:
 
         if (
-            task.completed
+            task.status == "done"
             and task.timetable_item_id
         ):
 
@@ -1407,20 +2773,25 @@ def analytics():
         1
     )
 
-    # -----------------------------------------------------
-    # RENDER ANALYTICS
-    # -----------------------------------------------------
-
     return render_template(
         "analytics.html",
+
         total_tasks=total_tasks,
+
         completed_tasks=completed_tasks,
+
         remaining_tasks=remaining_tasks,
+
         overall_progress=overall_progress,
+
         subject_data=subject_data,
+
         best_subject=best_subject,
+
         best_progress=best_progress,
+
         weekly_data=weekly_data,
+
         study_hours=study_hours
     )
 
@@ -1457,11 +2828,12 @@ def subject_detail(subject_name):
     completed_tasks = sum(
         1
         for task in tasks
-        if task.completed
+        if task.status == "done"
     )
 
     remaining_tasks = (
-        total_tasks - completed_tasks
+        total_tasks
+        - completed_tasks
     )
 
     progress = 0
@@ -1473,10 +2845,6 @@ def subject_detail(subject_name):
             / total_tasks
             * 100
         )
-
-    # -----------------------------------------------------
-    # STUDY TIME
-    # -----------------------------------------------------
 
     study_minutes = 0
 
@@ -1502,12 +2870,19 @@ def subject_detail(subject_name):
 
     return render_template(
         "subject_detail.html",
+
         subject=subject_name,
+
         tasks=tasks,
+
         total_tasks=total_tasks,
+
         completed_tasks=completed_tasks,
+
         remaining_tasks=remaining_tasks,
+
         progress=progress,
+
         study_hours=study_hours
     )
 
