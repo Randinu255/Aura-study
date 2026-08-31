@@ -27,6 +27,19 @@
         padding: 0;
     }
 
+.next-time {
+
+    color: #aab4ff;
+
+    font-size: 10px;
+
+    font-weight: 800;
+
+    margin-top: 7px;
+
+    letter-spacing: 0.5px;
+}
+
     :root {
         --bg: #070910;
         --bg-soft: #0b0f1a;
@@ -1284,11 +1297,84 @@
     }
 
 
-    .check-form {
+    .task-actions {
 
-        flex-shrink:
-            0;
-    }
+    display: flex;
+
+    align-items: center;
+
+    gap: 7px;
+
+    flex-shrink: 0;
+}
+
+
+.task-actions form {
+    margin: 0;
+}
+
+
+.status-button {
+
+    width: 29px;
+
+    height: 29px;
+
+    border-radius: 9px;
+
+    border: 1px solid
+        rgba(255,255,255,0.20);
+
+    background: transparent;
+
+    color: #737d91;
+
+    cursor: pointer;
+
+    font-size: 16px;
+
+    font-weight: 900;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    transition: 0.2s ease;
+}
+
+
+.status-button:hover {
+
+    background:
+        rgba(255,255,255,0.08);
+
+    border-color:
+        rgba(255,255,255,0.35);
+
+    color: white;
+}
+
+
+.done-button.selected {
+
+    background: #ffffff;
+
+    color: #080a11;
+
+    border-color: #ffffff;
+}
+
+
+.notdone-button.selected {
+
+    background: rgba(255,255,255,0.12);
+
+    color: #ffffff;
+
+    border-color: rgba(255,255,255,0.40);
+}
 
 
     .check-button {
@@ -1399,6 +1485,28 @@
             0.45;
     }
 
+.not-done .task-title {
+
+    opacity: 0.55;
+
+}
+
+
+.not-done {
+
+    border-color:
+        rgba(255,255,255,0.13);
+
+}
+
+
+.completed .task-title {
+
+    text-decoration: line-through;
+
+    opacity: 0.45;
+
+}
 
     .task-meta {
 
@@ -1881,25 +1989,81 @@
     </p>
 
 
+    <div
+    class="next-task"
+    id="nextTaskCard"
+>
+
     {% if next_task %}
 
-        <div class="next-task">
+        <div class="next-label">
+            NEXT UP
+        </div>
 
-            <div class="next-label">
-                NEXT UP
-            </div>
+        <div
+            class="next-title"
+            id="nextTaskTitle"
+        >
+            {{ next_task.title }}
+        </div>
 
-            <div class="next-title">
-                {{ next_task.title }}
-            </div>
+        <div
+            class="next-subject"
+            id="nextTaskSubject"
+        >
+            {{ next_task.subject }}
+        </div>
 
-            <div class="next-subject">
-                {{ next_task.subject }}
-            </div>
+        <div
+            class="next-time"
+            id="nextTaskTime"
+        >
+            {% if next_task.timetable_item_id %}
 
+                {% set next_item =
+                    next_task.user.timetable_items
+                    |selectattr(
+                        "id",
+                        "equalto",
+                        next_task.timetable_item_id
+                    )
+                    |first
+                %}
+
+                {% if next_item %}
+
+                    {{ next_item.start_time }}
+                    –
+                    {{ next_item.end_time }}
+
+                {% endif %}
+
+            {% endif %}
+        </div>
+
+    {% else %}
+
+        <div class="next-label">
+            NEXT UP
+        </div>
+
+        <div
+            class="next-title"
+            id="nextTaskTitle"
+        >
+            No more sessions today
+        </div>
+
+        <div
+            class="next-subject"
+            id="nextTaskSubject"
+        >
+            You've reached the end of today's timetable.
         </div>
 
     {% endif %}
+
+</div>
 
 </section>
 
@@ -2189,49 +2353,61 @@
         {% for task in tasks %}
 
             <div
-                class="
-                    task
-                    {% if task.completed %}
-                        completed
-                    {% endif %}
-                "
-            >
+    class="
+        task
 
-                <form
-                    method="POST"
-                    class="check-form"
+        {% if task.status == 'done' %}
+            completed
+        {% elif task.status == 'not_done' %}
+            not-done
+        {% endif %}
+    "
+> 
 
-                    action="{% if task.completed %}
+<div class="task-actions">
 
-                        {{ url_for(
-                            'uncomplete_task',
-                            task_id=task.id
-                        ) }}
+    <!-- DONE -->
 
-                    {% else %}
+    <form
+        method="POST"
+        action="{{ url_for('complete_task', task_id=task.id) }}"
+    >
 
-                        {{ url_for(
-                            'complete_task',
-                            task_id=task.id
-                        ) }}
+        <button
+            type="submit"
+            class="status-button done-button
+            {% if task.status == 'done' %}
+                selected
+            {% endif %}"
+            title="Mark as done"
+        >
+            ✓
+        </button>
 
-                    {% endif %}"
-                >
+    </form>
 
-                    <button
-                        type="submit"
-                        class="check-button"
-                        aria-label="Toggle task"
-                    >
 
-                        {% if task.completed %}
-                            ✓
-                        {% endif %}
+    <!-- NOT DONE -->
 
-                    </button>
+    <form
+        method="POST"
+        action="{{ url_for('not_done_task', task_id=task.id) }}"
+    >
 
-                </form>
+        <button
+            type="submit"
+            class="status-button notdone-button
+            {% if task.status == 'not_done' %}
+                selected
+            {% endif %}"
+            title="Mark as not done"
+        >
+            ×
+        </button>
 
+    </form>
+
+</div>
 
                 <div class="task-info">
 
@@ -2355,4 +2531,228 @@
 
 </a>
 
-</nav></body></html>
+</nav>
+
+<script>
+
+    // =====================================================
+    // AURA LIVE NEXT-UP SYSTEM
+    // =====================================================
+
+    const todayTasks = [
+
+        {% for task in tasks %}
+
+            {% if task.timetable_item_id %}
+
+                {% set item =
+                    task.user.timetable_items
+                    |selectattr(
+                        "id",
+                        "equalto",
+                        task.timetable_item_id
+                    )
+                    |first
+                %}
+
+                {% if item %}
+
+                {
+                    id: {{ task.id }},
+                    title: {{ task.title | tojson }},
+                    subject: {{ task.subject | tojson }},
+                    start: {{ item.start_time | tojson }},
+                    end: {{ item.end_time | tojson }},
+                    status: {{ task.status | tojson }}
+                },
+
+                {% endif %}
+
+            {% endif %}
+
+        {% endfor %}
+
+    ];
+
+
+    function timeToMinutes(timeString) {
+
+        const parts = timeString.split(":");
+
+        return (
+            parseInt(parts[0], 10) * 60
+            +
+            parseInt(parts[1], 10)
+        );
+
+    }
+
+
+    function getCurrentMinutes() {
+
+        const now = new Date();
+
+        return (
+            now.getHours() * 60
+            +
+            now.getMinutes()
+        );
+
+    }
+
+
+    function updateNextUp() {
+
+        const currentMinutes =
+            getCurrentMinutes();
+
+
+        let currentTask = null;
+
+        let futureTasks = [];
+
+
+        todayTasks.forEach(task => {
+
+            const start =
+                timeToMinutes(task.start);
+
+            const end =
+                timeToMinutes(task.end);
+
+
+            // ---------------------------------------------
+            // CURRENT SESSION
+            // ---------------------------------------------
+
+            if (
+                currentMinutes >= start &&
+                currentMinutes < end
+            ) {
+
+                if (
+                    task.status !== "done"
+                ) {
+
+                    currentTask = task;
+
+                }
+
+            }
+
+
+            // ---------------------------------------------
+            // FUTURE SESSION
+            // ---------------------------------------------
+
+            if (
+                currentMinutes < start
+            ) {
+
+                futureTasks.push(task);
+
+            }
+
+        });
+
+
+        let selectedTask = null;
+
+
+        if (currentTask) {
+
+            selectedTask = currentTask;
+
+        }
+        else if (futureTasks.length > 0) {
+
+            futureTasks.sort(
+                (a, b) =>
+                    timeToMinutes(a.start)
+                    -
+                    timeToMinutes(b.start)
+            );
+
+            selectedTask =
+                futureTasks[0];
+
+        }
+
+
+        const title =
+            document.getElementById(
+                "nextTaskTitle"
+            );
+
+        const subject =
+            document.getElementById(
+                "nextTaskSubject"
+            );
+
+        const time =
+            document.getElementById(
+                "nextTaskTime"
+            );
+
+
+        if (!title || !subject) {
+            return;
+        }
+
+
+        if (selectedTask) {
+
+            title.textContent =
+                selectedTask.title;
+
+            subject.textContent =
+                selectedTask.subject;
+
+
+            if (time) {
+
+                time.textContent =
+                    selectedTask.start
+                    +
+                    " – "
+                    +
+                    selectedTask.end;
+
+            }
+
+        }
+        else {
+
+            title.textContent =
+                "No more sessions today";
+
+            subject.textContent =
+                "You've reached the end of today's timetable.";
+
+
+            if (time) {
+
+                time.textContent = "";
+
+            }
+
+        }
+
+    }
+
+
+    // Run immediately
+    updateNextUp();
+
+
+    // Check every second
+    setInterval(
+        updateNextUp,
+        1000
+    );
+
+</script>
+
+</body>
+
+</html>

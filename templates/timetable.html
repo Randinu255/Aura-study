@@ -1,582 +1,92 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8">
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta
+name="viewport"
+content="width=device-width, initial-scale=1.0"
 
-<meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
->
+«»
 
-<title>AURA — Timetable</title>
+<title>AURA — Weekly Timetable</title><style>
 
-<style>
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
 
-    * {
-        box-sizing: border-box;
-        margin: 0;
-        padding: 0;
-    }
 
-    body {
+body {
 
-        font-family:
-            Inter,
-            system-ui,
-            -apple-system,
-            BlinkMacSystemFont,
-            "Segoe UI",
-            sans-serif;
+    font-family:
+        Inter,
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
 
-        min-height: 100vh;
+    min-height: 100vh;
 
-        color: #ffffff;
+    color: #ffffff;
 
-        background:
-            radial-gradient(
-                circle at top left,
-                #1d2540 0,
-                #0b0e17 45%,
-                #070910 100%
-            );
+    background:
+        radial-gradient(
+            circle at top left,
+            #1d2540 0,
+            #0b0e17 45%,
+            #070910 100%
+        );
 
-        padding-bottom: 45px;
-    }
+    padding-bottom: 60px;
+}
 
 
-    /* =================================================
-       NAVBAR
-    ================================================= */
+/* =====================================================
+   NAVBAR
+===================================================== */
 
-    .navbar {
+.navbar {
 
-        height: 72px;
-
-        display: flex;
-
-        align-items: center;
-
-        justify-content: space-between;
-
-        padding: 0 22px;
-
-        background:
-            rgba(8,10,18,0.72);
-
-        border-bottom:
-            1px solid
-            rgba(255,255,255,0.08);
-
-        backdrop-filter: blur(18px);
-
-        position: sticky;
-
-        top: 0;
-
-        z-index: 20;
-    }
-
-
-    .brand {
-
-        display: flex;
-
-        align-items: center;
-
-        gap: 10px;
-    }
-
-
-    .logo {
-
-        width: 40px;
-
-        height: 40px;
-
-        display: flex;
-
-        align-items: center;
-
-        justify-content: center;
-
-        border-radius: 13px;
-
-        background:
-            linear-gradient(
-                135deg,
-                #ffffff,
-                #8ea2ff
-            );
-
-        color: #080a10;
-
-        font-weight: 900;
-
-        font-size: 20px;
-
-        box-shadow:
-            0 8px 30px
-            rgba(120,140,255,0.20);
-    }
-
-
-    .brand-name {
-
-        font-size: 19px;
-
-        font-weight: 800;
-
-        letter-spacing: 1px;
-    }
-
-
-    .back {
-
-        display: inline-flex;
-
-        align-items: center;
-
-        gap: 6px;
-
-        color: #aeb5c7;
-
-        text-decoration: none;
-
-        padding: 9px 13px;
-
-        border:
-            1px solid
-            rgba(255,255,255,0.08);
-
-        border-radius: 11px;
-
-        background:
-            rgba(255,255,255,0.035);
-
-        font-size: 12px;
-
-        font-weight: 700;
-
-        transition: 0.2s ease;
-    }
-
-
-    .back:hover {
-
-        color: white;
-
-        background:
-            rgba(255,255,255,0.08);
-
-        transform:
-            translateY(-1px);
-    }
-
-
-    /* =================================================
-       MAIN
-    ================================================= */
-
-    .container {
-
-        width:
-            min(
-                1000px,
-                calc(100% - 30px)
-            );
-
-        margin: 0 auto;
-
-        padding-top: 34px;
-    }
-
-
-    /* =================================================
-       HEADER
-    ================================================= */
-
-    .heading {
-
-        margin-bottom: 24px;
-    }
-
-
-    .eyebrow {
-
-        color: #8993ab;
-
-        font-size: 10px;
-
-        letter-spacing: 2px;
-
-        font-weight: 800;
-
-        margin-bottom: 9px;
-    }
-
-
-    h1 {
-
-        font-size:
-            clamp(
-                30px,
-                6vw,
-                44px
-            );
-
-        line-height: 1.1;
-
-        letter-spacing: -1px;
-
-        margin-bottom: 8px;
-    }
-
-
-    .subtitle {
-
-        color: #98a1b5;
-
-        font-size: 14px;
-
-        line-height: 1.6;
-    }
-
-
-    /* =================================================
-       TOP ACTION
-    ================================================= */
-
-    .top-actions {
-
-        display: flex;
-
-        justify-content: flex-end;
-
-        margin-bottom: 18px;
-    }
-
-
-    .add-button {
-
-        display: inline-flex;
-
-        align-items: center;
-
-        justify-content: center;
-
-        text-decoration: none;
-
-        color: #080a10;
-
-        background:
-            linear-gradient(
-                135deg,
-                #ffffff,
-                #dce2ff
-            );
-
-        padding: 11px 16px;
-
-        border-radius: 13px;
-
-        font-size: 12px;
-
-        font-weight: 900;
-
-        box-shadow:
-            0 10px 30px
-            rgba(130,150,255,0.12);
-
-        transition:
-            transform 0.2s ease,
-            box-shadow 0.2s ease;
-    }
-
-
-    .add-button:hover {
-
-        transform:
-            translateY(-2px);
-
-        box-shadow:
-            0 15px 35px
-            rgba(130,150,255,0.20);
-    }
-
-
-    /* =================================================
-       SCHEDULE
-    ================================================= */
-
-    .schedule {
-
-        display: flex;
-
-        flex-direction: column;
-
-        gap: 13px;
-    }
-
-
-    .day-card {
-
-        background:
-            linear-gradient(
-                135deg,
-                rgba(255,255,255,0.065),
-                rgba(255,255,255,0.030)
-            );
-
-        border:
-            1px solid
-            rgba(255,255,255,0.085);
-
-        border-radius: 23px;
-
-        overflow: hidden;
-
-        backdrop-filter: blur(18px);
-
-        box-shadow:
-            0 15px 45px
-            rgba(0,0,0,0.14);
-
-        transition:
-            border-color 0.2s ease,
-            transform 0.2s ease;
-    }
-
-
-    .day-card:hover {
-
-        border-color:
-            rgba(255,255,255,0.13);
-    }
-
-
-    /* =================================================
-       DAY HEADER
-    ================================================= */
-
-    .day-header {
-
-        min-height: 62px;
-
-        padding: 15px 19px;
-
-        background:
-            rgba(255,255,255,0.035);
-
-        border-bottom:
-            1px solid
-            rgba(255,255,255,0.065);
-
-        display: flex;
-
-        justify-content: space-between;
-
-        align-items: center;
-
-        gap: 15px;
-    }
-
-
-    .date {
-
-        font-size: 15px;
-
-        font-weight: 850;
-
-        line-height: 1.4;
-    }
-
-
-    .day-count {
-
-        color: #818ba1;
-
-        font-size: 9px;
-
-        font-weight: 800;
-
-        letter-spacing: 1.2px;
-
-        text-transform: uppercase;
-
-        white-space: nowrap;
-
-        padding: 7px 9px;
-
-        border-radius: 9px;
-
-        background:
-            rgba(255,255,255,0.045);
-
-        border:
-            1px solid
-            rgba(255,255,255,0.06);
-    }
-
-
-    /* =================================================
-       ITEMS
-    ================================================= */
-
-    .items {
-
-        padding: 9px;
-    }
-
-
-    .item {
-
-        display: grid;
-
-        grid-template-columns:
-            100px
-            1fr
-            auto;
-
-        align-items: center;
-
-        gap: 16px;
-
-        padding: 15px;
-
-        border-radius: 16px;
-
-        border:
-            1px solid
-            transparent;
-
-        transition:
-            background 0.2s ease,
-            border-color 0.2s ease,
-            transform 0.2s ease;
-    }
-
-
-    .item:hover {
-
-        background:
-            rgba(255,255,255,0.045);
-
-        border-color:
-            rgba(255,255,255,0.06);
-
-        transform:
-            translateX(2px);
-    }
-
-
-    /* =================================================
-       TIME
-    ================================================= */
-
-    .time {
-
-        color: #aeb7ca;
-
-        font-size: 12px;
-
-        font-weight: 750;
-
-        line-height: 1.45;
-
-        padding-left: 2px;
-    }
-
-
-    .time br + * {
-        opacity: 0.35;
-    }
-
-
-    /* =================================================
-       TASK INFO
-    ================================================= */
-
-    .title {
-
-        font-size: 14px;
-
-        font-weight: 800;
-
-        line-height: 1.4;
-
-        margin-bottom: 5px;
-
-        overflow: hidden;
-
-        text-overflow: ellipsis;
-
-        white-space: nowrap;
-    }
-
-
-    .subject {
-
-        display: inline-flex;
-
-        color: #8d97ad;
-
-        font-size: 11px;
-
-        font-weight: 650;
-
-        padding: 4px 7px;
-
-        border-radius: 7px;
-
-        background:
-            rgba(255,255,255,0.045);
-    }
-
-
-    /* =================================================
-       DURATION
-    ================================================= */
-
-    .duration {
-
-        padding: 7px 10px;
-
-        border-radius: 9px;
-
-        background:
-            rgba(255,255,255,0.055);
-
-        border:
-            1px solid
-            rgba(255,255,255,0.06);
-
-        color: #aab3c7;
-
-        font-size: 10px;
-
-        font-weight: 750;
-
-        white-space: nowrap;
-    }
-
-/* =================================================
-   ITEM ACTIONS
-================================================= */
-
-.item-actions {
+    height: 72px;
 
     display: flex;
 
     align-items: center;
 
-    gap: 8px;
+    justify-content: space-between;
 
-    flex-shrink: 0;
+    padding: 0 22px;
+
+    background:
+        rgba(8,10,18,0.72);
+
+    border-bottom:
+        1px solid
+        rgba(255,255,255,0.08);
+
+    backdrop-filter: blur(18px);
+
+    position: sticky;
+
+    top: 0;
+
+    z-index: 50;
 }
 
 
-.delete-button {
+.brand {
 
-    width: 34px;
+    display: flex;
 
-    height: 34px;
+    align-items: center;
+
+    gap: 10px;
+}
+
+
+.logo {
+
+    width: 40px;
+
+    height: 40px;
 
     display: flex;
 
@@ -584,10 +94,683 @@
 
     justify-content: center;
 
-    border: 1px solid
+    border-radius: 13px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #ffffff,
+            #8ea2ff
+        );
+
+    color: #080a10;
+
+    font-weight: 900;
+
+    font-size: 20px;
+
+    box-shadow:
+        0 8px 30px
+        rgba(120,140,255,0.20);
+}
+
+
+.brand-name {
+
+    font-size: 19px;
+
+    font-weight: 800;
+
+    letter-spacing: 1px;
+}
+
+
+.back {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 6px;
+
+    color: #aeb5c7;
+
+    text-decoration: none;
+
+    padding: 9px 13px;
+
+    border:
+        1px solid
         rgba(255,255,255,0.08);
 
+    border-radius: 11px;
+
+    background:
+        rgba(255,255,255,0.035);
+
+    font-size: 12px;
+
+    font-weight: 700;
+
+    transition: 0.2s ease;
+}
+
+
+.back:hover {
+
+    color: white;
+
+    background:
+        rgba(255,255,255,0.08);
+
+    transform:
+        translateY(-1px);
+}
+
+
+/* =====================================================
+   MAIN
+===================================================== */
+
+.container {
+
+    width:
+        min(
+            1200px,
+            calc(100% - 30px)
+        );
+
+    margin: 0 auto;
+
+    padding-top: 35px;
+}
+
+
+/* =====================================================
+   HEADER
+===================================================== */
+
+.heading {
+
+    margin-bottom: 25px;
+}
+
+
+.eyebrow {
+
+    color: #8993ab;
+
+    font-size: 10px;
+
+    letter-spacing: 2px;
+
+    font-weight: 800;
+
+    margin-bottom: 9px;
+}
+
+
+h1 {
+
+    font-size:
+        clamp(
+            30px,
+            6vw,
+            44px
+        );
+
+    line-height: 1.1;
+
+    letter-spacing: -1px;
+
+    margin-bottom: 9px;
+}
+
+
+.subtitle {
+
+    color: #98a1b5;
+
+    font-size: 14px;
+
+    line-height: 1.6;
+}
+
+
+/* =====================================================
+   WEEK BAR
+===================================================== */
+
+.week-bar {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 15px;
+
+    padding: 17px 19px;
+
+    margin-bottom: 20px;
+
+    border:
+        1px solid
+        rgba(255,255,255,0.08);
+
+    border-radius: 18px;
+
+    background:
+        rgba(255,255,255,0.045);
+
+    backdrop-filter: blur(18px);
+}
+
+
+.week-label {
+
+    color: #8993ab;
+
+    font-size: 9px;
+
+    font-weight: 850;
+
+    letter-spacing: 1.5px;
+
+    text-transform: uppercase;
+
+    margin-bottom: 4px;
+}
+
+
+.week-range {
+
+    color: white;
+
+    font-size: 14px;
+
+    font-weight: 800;
+}
+
+
+.week-status {
+
+    color: #9da8be;
+
+    font-size: 11px;
+
+    font-weight: 700;
+}
+
+
+/* =====================================================
+   WEEK GRID
+===================================================== */
+
+.schedule {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+
+    gap: 16px;
+}
+
+
+/* =====================================================
+   DAY CARD
+===================================================== */
+
+.day-card {
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(255,255,255,0.065),
+            rgba(255,255,255,0.030)
+        );
+
+    border:
+        1px solid
+        rgba(255,255,255,0.085);
+
+    border-radius: 23px;
+
+    overflow: hidden;
+
+    backdrop-filter: blur(18px);
+
+    box-shadow:
+        0 15px 45px
+        rgba(0,0,0,0.14);
+
+    transition:
+        border-color 0.2s ease,
+        transform 0.2s ease;
+}
+
+
+.day-card:hover {
+
+    border-color:
+        rgba(255,255,255,0.14);
+
+    transform:
+        translateY(-2px);
+}
+
+
+/* =====================================================
+   DAY HEADER
+===================================================== */
+
+.day-header {
+
+    min-height: 72px;
+
+    padding: 15px 18px;
+
+    background:
+        rgba(255,255,255,0.035);
+
+    border-bottom:
+        1px solid
+        rgba(255,255,255,0.065);
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    gap: 12px;
+}
+
+
+.day-name {
+
+    font-size: 15px;
+
+    font-weight: 900;
+
+    letter-spacing: 0.2px;
+}
+
+
+.selected-date {
+
+    color: #8e9ab2;
+
+    font-size: 11px;
+
+    margin-top: 4px;
+
+    font-weight: 650;
+}
+
+
+.selected-date strong {
+
+    color: #cfd5e2;
+}
+
+
+.day-badge {
+
+    color: #8d97ad;
+
+    font-size: 8px;
+
+    font-weight: 850;
+
+    letter-spacing: 1px;
+
+    text-transform: uppercase;
+
+    white-space: nowrap;
+
+    padding: 7px 9px;
+
     border-radius: 9px;
+
+    background:
+        rgba(255,255,255,0.045);
+
+    border:
+        1px solid
+        rgba(255,255,255,0.06);
+}
+
+
+/* =====================================================
+   DATE SETUP
+===================================================== */
+
+.date-setup {
+
+    padding: 20px;
+
+    text-align: center;
+}
+
+
+.date-icon {
+
+    width: 50px;
+
+    height: 50px;
+
+    margin:
+        0 auto 12px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 15px;
+
+    background:
+        rgba(255,255,255,0.045);
+
+    border:
+        1px solid
+        rgba(255,255,255,0.07);
+
+    font-size: 22px;
+}
+
+
+.setup-title {
+
+    color: #d6dbe5;
+
+    font-size: 14px;
+
+    font-weight: 800;
+
+    margin-bottom: 5px;
+}
+
+
+.setup-text {
+
+    color: #788399;
+
+    font-size: 10px;
+
+    line-height: 1.5;
+
+    margin-bottom: 14px;
+}
+
+
+/* =====================================================
+   BUTTONS
+===================================================== */
+
+.primary-button {
+
+    border: none;
+
+    cursor: pointer;
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 7px;
+
+    color: #080a10;
+
+    background:
+        linear-gradient(
+            135deg,
+            #ffffff,
+            #dce2ff
+        );
+
+    padding: 10px 15px;
+
+    border-radius: 11px;
+
+    font-size: 11px;
+
+    font-weight: 900;
+
+    transition: 0.2s ease;
+}
+
+
+.primary-button:hover {
+
+    transform:
+        translateY(-2px);
+
+    box-shadow:
+        0 12px 28px
+        rgba(130,150,255,0.16);
+}
+
+
+.secondary-button {
+
+    border:
+        1px solid
+        rgba(255,255,255,0.08);
+
+    cursor: pointer;
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 7px;
+
+    color: #c6cddd;
+
+    background:
+        rgba(255,255,255,0.045);
+
+    padding: 9px 13px;
+
+    border-radius: 10px;
+
+    font-size: 10px;
+
+    font-weight: 800;
+
+    transition: 0.2s ease;
+}
+
+
+.secondary-button:hover {
+
+    background:
+        rgba(255,255,255,0.08);
+
+    color: white;
+}
+
+
+/* =====================================================
+   DAY ACTIONS
+===================================================== */
+
+.day-actions {
+
+    padding:
+        12px 14px;
+
+    display: flex;
+
+    gap: 8px;
+
+    border-bottom:
+        1px solid
+        rgba(255,255,255,0.05);
+}
+
+
+.day-actions button {
+
+    flex: 1;
+}
+
+
+/* =====================================================
+   ITEMS
+===================================================== */
+
+.items {
+
+    padding: 9px;
+}
+
+
+.item {
+
+    display: grid;
+
+    grid-template-columns:
+        72px
+        1fr
+        auto;
+
+    align-items: center;
+
+    gap: 12px;
+
+    padding: 13px;
+
+    border-radius: 15px;
+
+    border:
+        1px solid
+        transparent;
+
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease;
+}
+
+
+.item:hover {
+
+    background:
+        rgba(255,255,255,0.045);
+
+    border-color:
+        rgba(255,255,255,0.06);
+}
+
+
+/* =====================================================
+   TIME
+===================================================== */
+
+.time {
+
+    color: #aeb7ca;
+
+    font-size: 10px;
+
+    font-weight: 800;
+
+    line-height: 1.5;
+}
+
+
+/* =====================================================
+   TASK
+===================================================== */
+
+.title {
+
+    color: white;
+
+    font-size: 12px;
+
+    font-weight: 800;
+
+    line-height: 1.4;
+
+    margin-bottom: 5px;
+}
+
+
+.subject {
+
+    display: inline-flex;
+
+    color: #8d97ad;
+
+    font-size: 9px;
+
+    font-weight: 700;
+
+    padding: 4px 7px;
+
+    border-radius: 7px;
+
+    background:
+        rgba(255,255,255,0.045);
+}
+
+
+.item-actions {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 7px;
+}
+
+
+.duration {
+
+    padding: 6px 8px;
+
+    border-radius: 8px;
+
+    background:
+        rgba(255,255,255,0.055);
+
+    color: #aab3c7;
+
+    font-size: 9px;
+
+    font-weight: 750;
+
+    white-space: nowrap;
+}
+
+
+.delete-button {
+
+    width: 31px;
+
+    height: 31px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border:
+        1px solid
+        rgba(255,255,255,0.08);
+
+    border-radius: 8px;
 
     background:
         rgba(255,255,255,0.035);
@@ -595,8 +778,6 @@
     color: #aeb5c7;
 
     cursor: pointer;
-
-    font-size: 14px;
 
     transition: 0.2s ease;
 }
@@ -611,266 +792,433 @@
         rgba(255,100,100,0.25);
 
     color: #ff8d8d;
-
-    transform:
-        translateY(-1px);
 }
 
-    /* =================================================
-       EMPTY
-    ================================================= */
 
-    .empty {
+/* =====================================================
+   NO TASKS
+===================================================== */
+
+.no-tasks {
+
+    padding:
+        25px 15px;
+
+    text-align: center;
+
+    color: #707b91;
+
+    font-size: 10px;
+
+    line-height: 1.6;
+}
+
+
+/* =====================================================
+   MODAL
+===================================================== */
+
+.modal-backdrop {
+
+    position: fixed;
+
+    inset: 0;
+
+    z-index: 100;
+
+    display: none;
+
+    align-items: center;
+
+    justify-content: center;
+
+    padding: 18px;
+
+    background:
+        rgba(0,0,0,0.68);
+
+    backdrop-filter:
+        blur(12px);
+}
+
+
+.modal-backdrop.show {
+
+    display: flex;
+}
+
+
+.modal {
+
+    width:
+        min(
+            520px,
+            100%
+        );
+
+    max-height:
+        calc(100vh - 36px);
+
+    overflow-y: auto;
+
+    background:
+        linear-gradient(
+            145deg,
+            #171b29,
+            #0d1019
+        );
+
+    border:
+        1px solid
+        rgba(255,255,255,0.10);
+
+    border-radius: 24px;
+
+    box-shadow:
+        0 30px 90px
+        rgba(0,0,0,0.55);
+}
+
+
+.modal-header {
+
+    padding:
+        21px 22px;
+
+    border-bottom:
+        1px solid
+        rgba(255,255,255,0.07);
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 10px;
+}
+
+
+.modal-title {
+
+    font-size: 18px;
+
+    font-weight: 850;
+}
+
+
+.modal-date {
+
+    color: #8792a9;
+
+    font-size: 10px;
+
+    margin-top: 4px;
+}
+
+
+.close-button {
+
+    width: 34px;
+
+    height: 34px;
+
+    border:
+        1px solid
+        rgba(255,255,255,0.08);
+
+    border-radius: 10px;
+
+    background:
+        rgba(255,255,255,0.035);
+
+    color: #aeb5c7;
+
+    cursor: pointer;
+
+    font-size: 18px;
+}
+
+
+.modal-body {
+
+    padding: 22px;
+}
+
+
+.form-group {
+
+    margin-bottom: 15px;
+}
+
+
+.form-label {
+
+    display: block;
+
+    color: #aeb7ca;
+
+    font-size: 10px;
+
+    font-weight: 800;
+
+    margin-bottom: 7px;
+
+    letter-spacing: 0.5px;
+}
+
+
+.form-input,
+.form-select,
+.form-textarea {
+
+    width: 100%;
+
+    border:
+        1px solid
+        rgba(255,255,255,0.08);
+
+    border-radius: 11px;
+
+    background:
+        rgba(255,255,255,0.045);
+
+    color: white;
+
+    padding:
+        11px 12px;
+
+    outline: none;
+
+    font-family: inherit;
+
+    font-size: 12px;
+}
+
+
+.form-input:focus,
+.form-select:focus,
+.form-textarea:focus {
+
+    border-color:
+        rgba(160,175,255,0.45);
+
+    background:
+        rgba(255,255,255,0.065);
+}
+
+
+.form-select option {
+
+    background: #111522;
+
+    color: white;
+}
+
+
+.form-textarea {
+
+    min-height: 75px;
+
+    resize: vertical;
+}
+
+
+.time-row {
+
+    display: grid;
+
+    grid-template-columns:
+        1fr
+        1fr;
+
+    gap: 10px;
+}
+
+
+.modal-footer {
+
+    padding:
+        15px 22px 22px;
+
+    display: flex;
+
+    gap: 9px;
+}
+
+
+.modal-footer button {
+
+    flex: 1;
+}
+
+
+/* =====================================================
+   DATE MODAL
+===================================================== */
+
+.date-modal .modal {
+
+    max-width: 400px;
+}
+
+
+/* =====================================================
+   FLASH
+===================================================== */
+
+.flash-container {
+
+    margin-bottom: 17px;
+}
+
+
+.flash {
+
+    padding:
+        11px 14px;
+
+    border-radius: 12px;
+
+    margin-bottom: 8px;
+
+    font-size: 11px;
+
+    font-weight: 700;
+
+    background:
+        rgba(255,255,255,0.06);
+
+    border:
+        1px solid
+        rgba(255,255,255,0.08);
+
+    color: #dce1eb;
+}
+
+
+/* =====================================================
+   RESPONSIVE
+===================================================== */
+
+@media (max-width: 760px) {
+
+    .container {
+
+        width:
+            calc(100% - 22px);
+
+        padding-top: 25px;
+    }
+
+
+    .navbar {
 
         padding:
-            65px 25px;
-
-        text-align: center;
-
-        border:
-            1px dashed
-            rgba(255,255,255,0.14);
-
-        border-radius: 23px;
-
-        background:
-            rgba(255,255,255,0.025);
-
-        color: #7f899f;
+            0 15px;
     }
 
 
-    .empty-icon {
-
-        width: 58px;
-
-        height: 58px;
-
-        display: flex;
-
-        align-items: center;
-
-        justify-content: center;
-
-        margin:
-            0 auto 15px;
-
-        border-radius: 18px;
-
-        background:
-            rgba(255,255,255,0.055);
-
-        border:
-            1px solid
-            rgba(255,255,255,0.07);
-
-        font-size: 26px;
-
-        color: #a8b1c4;
-    }
-
-
-    .empty-title {
-
-        color: #c8cedb;
+    .brand-name {
 
         font-size: 17px;
-
-        font-weight: 800;
-
-        margin-bottom: 6px;
     }
 
 
-    .empty-text {
+    .schedule {
 
-        color: #7f899f;
-
-        font-size: 12px;
-
-        line-height: 1.6;
+        grid-template-columns:
+            1fr;
     }
 
 
-    /* =================================================
-       RESPONSIVE
-    ================================================= */
+    .week-bar {
 
-    @media (max-width: 650px) {
+        align-items:
+            flex-start;
 
-        .navbar {
+        flex-direction:
+            column;
+    }
 
-            padding:
-                0 15px;
-        }
-
-
-        .brand-name {
-
-            font-size: 17px;
-        }
-
-
-        .container {
-
-            width:
-                calc(100% - 22px);
-
-            padding-top:
-                25px;
-        }
-
-
-        .heading {
-
-            margin-bottom:
-                20px;
-        }
-
-
-        .top-actions {
-
-            margin-bottom:
-                14px;
-        }
-
-
-        .add-button {
-
-            width:
-                100%;
-
-            height:
-                48px;
-        }
-
-
-        .day-header {
-
-            padding:
-                14px 15px;
-        }
-
-
-        .date {
-
-            font-size:
-                13px;
-        }
-
-
-        .day-count {
-
-            font-size:
-                8px;
-
-            padding:
-                6px 7px;
-        }
-
-
-        .item {
-
-            grid-template-columns:
-                65px
-                1fr;
-
-            gap:
-                9px;
-
-            padding:
-                14px 11px;
-        }
-
-
-        .time {
-
-            font-size:
-                11px;
-        }
-
-
-        .title {
-
-            font-size:
-                13px;
-
-            white-space:
-                normal;
-        }
-
-
-        .duration {
-
-            grid-column:
-                2;
-
-            width:
-                fit-content;
-
-            margin-top:
-                -2px;
-        }
-
-.item-actions {
-
-    grid-column: 2;
-
-    justify-content: flex-start;
-
-    margin-top: -2px;
 }
 
+
+@media (max-width: 480px) {
+
+    .day-header {
+
+        padding:
+            14px;
     }
 
 
-    @media (max-width: 390px) {
+    .day-actions {
 
-        .back {
-
-            padding:
-                8px 10px;
-
-            font-size:
-                11px;
-        }
-
-
-        .logo {
-
-            width:
-                37px;
-
-            height:
-                37px;
-        }
-
-
-        .day-header {
-
-            align-items:
-                flex-start;
-
-            flex-direction:
-                column;
-
-            gap:
-                8px;
-        }
-
-
-        .day-count {
-
-            align-self:
-                flex-start;
-        }
-
+        flex-direction:
+            column;
     }
 
 
-</style>
+    .item {
 
-</head><body><!-- =====================================================
+        grid-template-columns:
+            60px
+            1fr;
+    }
+
+
+    .item-actions {
+
+        grid-column:
+            2;
+
+        justify-content:
+            flex-start;
+
+        margin-top:
+            3px;
+    }
+
+
+    .time {
+
+        font-size:
+            9px;
+    }
+
+
+    .title {
+
+        font-size:
+            11px;
+    }
+
+
+    .modal-body {
+
+        padding:
+            17px;
+    }
+
+
+    .modal-header {
+
+        padding:
+            18px;
+    }
+
+
+    .modal-footer {
+
+        padding:
+            13px 17px 17px;
+    }
+
+}
+
+
+</style></head><body><!-- =====================================================
      NAVBAR
 ===================================================== --><nav class="navbar"><div class="brand">
 
@@ -894,215 +1242,855 @@
 
 </nav><!-- =====================================================
      MAIN
-===================================================== --><main class="container"><!-- HEADER -->
-
-<section class="heading">
+===================================================== --><main class="container"><section class="heading">
 
     <div class="eyebrow">
         YOUR STUDY SYSTEM
     </div>
 
-
     <h1>
-        Timetable
+        Weekly Timetable
     </h1>
 
-
     <p class="subtitle">
-        Plan your study days and stay consistent.
+        Set each day once. Add your study sessions without
+        selecting the date again.
     </p>
 
 </section>
 
 
-<!-- ADD -->
-
-<div class="top-actions">
-
-    <a
-        href="{{ url_for('add_task') }}"
-        class="add-button"
-    >
-        + Add Study Task
-    </a>
-
-</div>
-
-
 <!-- =================================================
-     TIMETABLE
+     FLASH MESSAGES
 ================================================= -->
 
-{% if timetable %}
+{% with messages = get_flashed_messages(
+    with_categories=true
+) %}
 
-    <section class="schedule">
+    {% if messages %}
 
+        <div class="flash-container">
 
-        {% set current_date =
-            namespace(value=None)
-        %}
+            {% for category, message in messages %}
 
+                <div class="flash">
 
-        {% for item in timetable %}
+                    {{ message }}
 
+                </div>
 
-            {% if current_date.value != item.date %}
-
-
-                {% if current_date.value != None %}
-
-                    </div>
-                    </div>
-
-                {% endif %}
-
-
-                {% set current_date.value = item.date %}
-
-
-                <div class="day-card">
-
-
-                    <div class="day-header">
-
-                        <div class="date">
-
-                            {{ item.date.strftime("%A") }}
-
-                            ·
-
-                            {{ item.date.strftime("%d %b %Y") }}
-
-                        </div>
-
-
-                        <div class="day-count">
-
-                            Study Day
-
-                        </div>
-
-                    </div>
-
-
-                    <div class="items">
-
-
-            {% endif %}
-
-
-                        <div class="item">
-
-
-                            <div class="time">
-
-                                {{ item.start_time }}
-
-                                <br>
-
-                                ↓
-
-                                <br>
-
-                                {{ item.end_time }}
-
-                            </div>
-
-
-                            <div>
-
-                                <div class="title">
-
-                                    {{ item.title }}
-
-                                </div>
-
-
-                                <div class="subject">
-
-                                    {{ item.subject }}
-
-                                </div>
-
-                            </div>
-
-
-<div class="item-actions">
-
-    {% if item.duration_minutes %}
-
-        <div class="duration">
-
-            {{ item.duration_minutes }}
-            min
+            {% endfor %}
 
         </div>
 
     {% endif %}
 
-    <form
-        action="{{ url_for('delete_timetable', item_id=item.id) }}"
-        method="POST"
-        onsubmit="return confirm('Delete this study session?');"
-    >
+{% endwith %}
 
-        <button
-            type="submit"
-            class="delete-button"
-            title="Delete study session"
-        >
-            🗑️
-        </button>
 
-    </form>
+<!-- =================================================
+     WEEK BAR
+================================================= -->
+
+<div class="week-bar">
+
+    <div>
+
+        <div class="week-label">
+            CURRENT WEEK
+        </div>
+
+        <div class="week-range">
+
+            {{ week_start.strftime("%d %b %Y") }}
+
+            →
+
+            {{ week_end.strftime("%d %b %Y") }}
+
+        </div>
+
+    </div>
+
+
+    <div class="week-status">
+
+        7 Day Study Planner
+
+    </div>
 
 </div>
 
-                        </div>
+
+<!-- =================================================
+     WEEKLY SCHEDULE
+================================================= -->
+
+<section class="schedule">
 
 
-        {% endfor %}
+    {% for day in weekly_timetable %}
 
+
+        <article class="day-card">
+
+
+            <!-- =====================================
+                 DAY HEADER
+            ====================================== -->
+
+            <div class="day-header">
+
+
+                <div>
+
+                    <div class="day-name">
+
+                        {{ day.day_name }}
 
                     </div>
+
+
+                    {% if day.is_set %}
+
+                        <div class="selected-date">
+
+                            📅
+
+                            <strong>
+                                {{ day.date.strftime("%d %B %Y") }}
+                            </strong>
+
+                        </div>
+
+                    {% else %}
+
+                        <div class="selected-date">
+
+                            Date not set
+
+                        </div>
+
+                    {% endif %}
 
                 </div>
 
 
-    </section>
+                <div class="day-badge">
+
+                    {% if day.is_set %}
+
+                        READY
+
+                    {% else %}
+
+                        SETUP
+
+                    {% endif %}
+
+                </div>
 
 
-{% else %}
+            </div>
 
 
-    <!-- EMPTY STATE -->
+            <!-- =====================================
+                 DATE NOT SET
+            ====================================== -->
 
-    <section class="empty">
+            {% if not day.is_set %}
 
 
-        <div class="empty-icon">
-            ✦
+                <div class="date-setup">
+
+
+                    <div class="date-icon">
+                        📅
+                    </div>
+
+
+                    <div class="setup-title">
+
+                        Set {{ day.day_name }} Date
+
+                    </div>
+
+
+                    <div class="setup-text">
+
+                        Choose the date for this day.
+                        You only need to do this once.
+
+                    </div>
+
+
+                    <button
+                        type="button"
+                        class="primary-button"
+                        onclick="openDateModal(
+                            {{ day.weekday }},
+                            '{{ day.day_name }}'
+                        )"
+                    >
+
+                        📅 Set Date
+
+                    </button>
+
+
+                </div>
+
+
+            {% else %}
+
+
+                <!-- =================================
+                     DAY ACTIONS
+                ================================== -->
+
+                <div class="day-actions">
+
+
+                    <button
+                        type="button"
+                        class="primary-button"
+                        onclick="openTaskModal(
+                            '{{ day.date.isoformat() }}',
+                            '{{ day.day_name }}'
+                        )"
+                    >
+
+                        ＋ Add Task
+
+                    </button>
+
+
+                    <button
+                        type="button"
+                        class="secondary-button"
+                        onclick="openDateModal(
+                            {{ day.weekday }},
+                            '{{ day.day_name }}'
+                        )"
+                    >
+
+                        📅 Change Date
+
+                    </button>
+
+
+                </div>
+
+
+                <!-- =================================
+                     TASK ITEMS
+                ================================== -->
+
+                {% if day["items"] %}
+
+
+                    <div class="items">
+
+
+                        {% for item in day["items"] %}
+
+
+                            <div class="item">
+
+
+                                <div class="time">
+
+                                    {{ item.start_time }}
+
+                                    <br>
+
+                                    ↓
+
+                                    <br>
+
+                                    {{ item.end_time }}
+
+                                </div>
+
+
+                                <div>
+
+                                    <div class="title">
+
+                                        {{ item.title }}
+
+                                    </div>
+
+
+                                    <div class="subject">
+
+                                        {{ item.subject }}
+
+                                    </div>
+
+                                </div>
+
+
+                                <div class="item-actions">
+
+
+                                    {% if item.duration_minutes %}
+
+                                        <div class="duration">
+
+                                            {{ item.duration_minutes }}
+                                            min
+
+                                        </div>
+
+                                    {% endif %}
+
+
+                                    <form
+                                        action="{{
+                                            url_for(
+                                                'delete_timetable',
+                                                item_id=item.id
+                                            )
+                                        }}"
+                                        method="POST"
+                                        onsubmit="
+                                            return confirm(
+                                                'Delete this study session?'
+                                            );
+                                        "
+                                    >
+
+                                        <button
+                                            type="submit"
+                                            class="delete-button"
+                                            title="Delete study session"
+                                        >
+
+                                            🗑️
+
+                                        </button>
+
+
+                                    </form>
+
+
+                                </div>
+
+
+                            </div>
+
+
+                        {% endfor %}
+
+
+                    </div>
+
+
+                {% else %}
+
+
+                    <div class="no-tasks">
+
+                        No study sessions yet.
+
+                        <br>
+
+                        Tap <strong>+ Add Task</strong>
+                        to plan this day.
+
+                    </div>
+
+
+                {% endif %}
+
+
+            {% endif %}
+
+
+        </article>
+
+
+    {% endfor %}
+
+
+</section>
+
+</main><!-- =====================================================
+     DATE MODAL
+===================================================== --><div
+    class="modal-backdrop date-modal"
+    id="dateModal"
+    onclick="closeOutside(event, 'dateModal')"
+><div class="modal">
+
+
+    <div class="modal-header">
+
+
+        <div>
+
+            <div class="modal-title">
+
+                Set Day Date
+
+            </div>
+
+
+            <div
+                class="modal-date"
+                id="dateModalDay"
+            >
+
+            </div>
+
         </div>
 
 
-        <div class="empty-title">
+        <button
+            type="button"
+            class="close-button"
+            onclick="closeModal('dateModal')"
+        >
 
-            Your timetable is empty
+            ×
+
+        </button>
+
+
+    </div>
+
+
+    <form
+        method="POST"
+        id="dateForm"
+    >
+
+
+        <div class="modal-body">
+
+
+            <div class="form-group">
+
+                <label class="form-label">
+
+                    DATE
+
+                </label>
+
+
+                <input
+                    type="date"
+                    name="selected_date"
+                    id="selectedDate"
+                    class="form-input"
+                    required
+                >
+
+            </div>
+
+
+            <div class="setup-text">
+
+                The selected date must match the day
+                and belong to the current week.
+
+            </div>
+
 
         </div>
 
 
-        <div class="empty-text">
+        <div class="modal-footer">
 
-            Add your first study session
-            to begin your journey.
+
+            <button
+                type="button"
+                class="secondary-button"
+                onclick="closeModal('dateModal')"
+            >
+
+                Cancel
+
+            </button>
+
+
+            <button
+                type="submit"
+                class="primary-button"
+            >
+
+                Save Date
+
+            </button>
+
 
         </div>
 
 
-    </section>
+    </form>
 
 
-{% endif %}
+</div>
 
-</main></body></html>
+</div><!-- =====================================================
+     TASK MODAL
+===================================================== --><div
+    class="modal-backdrop"
+    id="taskModal"
+    onclick="closeOutside(event, 'taskModal')"
+><div class="modal">
+
+
+    <div class="modal-header">
+
+
+        <div>
+
+            <div class="modal-title">
+
+                Add Study Task
+
+            </div>
+
+
+            <div
+                class="modal-date"
+                id="taskModalDate"
+            >
+
+            </div>
+
+        </div>
+
+
+        <button
+            type="button"
+            class="close-button"
+            onclick="closeModal('taskModal')"
+        >
+
+            ×
+
+        </button>
+
+
+    </div>
+
+
+    <form
+        method="POST"
+        action="{{ url_for('weekly_add_task') }}"
+    >
+
+
+        <input
+            type="hidden"
+            name="date"
+            id="taskDate"
+        >
+
+
+        <div class="modal-body">
+
+
+            <div class="form-group">
+
+                <label class="form-label">
+                    SUBJECT
+                </label>
+
+
+                <input
+                    type="text"
+                    name="subject"
+                    class="form-input"
+                    placeholder="ICT / Accounting / Business Studies"
+                    required
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label class="form-label">
+                    TASK
+                </label>
+
+
+                <input
+                    type="text"
+                    name="title"
+                    class="form-input"
+                    placeholder="What are you going to study?"
+                    required
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label class="form-label">
+                    TIME
+                </label>
+
+
+                <div class="time-row">
+
+
+                    <input
+                        type="time"
+                        name="start_time"
+                        class="form-input"
+                        required
+                    >
+
+
+                    <input
+                        type="time"
+                        name="end_time"
+                        class="form-input"
+                        required
+                    >
+
+
+                </div>
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label class="form-label">
+                    PRIORITY
+                </label>
+
+
+                <select
+                    name="priority"
+                    class="form-select"
+                >
+
+                    <option value="normal">
+                        Normal
+                    </option>
+
+                    <option value="high">
+                        High
+                    </option>
+
+                    <option value="low">
+                        Low
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label class="form-label">
+                    NOTES
+                </label>
+
+
+                <textarea
+                    name="notes"
+                    class="form-textarea"
+                    placeholder="Optional notes..."
+                ></textarea>
+
+            </div>
+
+
+        </div>
+
+
+        <div class="modal-footer">
+
+
+            <button
+                type="button"
+                class="secondary-button"
+                onclick="closeModal('taskModal')"
+            >
+
+                Cancel
+
+            </button>
+
+
+            <button
+                type="submit"
+                class="primary-button"
+            >
+
+                ＋ Add Task
+
+            </button>
+
+
+        </div>
+
+
+    </form>
+
+
+</div>
+
+</div><!-- =====================================================
+     JAVASCRIPT
+===================================================== --><script>
+
+
+function openDateModal(
+    weekday,
+    dayName
+) {
+
+    const modal =
+        document.getElementById(
+            "dateModal"
+        );
+
+    const form =
+        document.getElementById(
+            "dateForm"
+        );
+
+    const dayText =
+        document.getElementById(
+            "dateModalDay"
+        );
+
+    const dateInput =
+        document.getElementById(
+            "selectedDate"
+        );
+
+    form.action =
+        "/set-weekly-date/" +
+        weekday;
+
+    dayText.textContent =
+        "Set a date for " +
+        dayName;
+
+    dateInput.value = "";
+
+    modal.classList.add(
+        "show"
+    );
+
+    document.body.style.overflow =
+        "hidden";
+}
+
+
+function openTaskModal(
+    date,
+    dayName
+) {
+
+    const modal =
+        document.getElementById(
+            "taskModal"
+        );
+
+    const dateInput =
+        document.getElementById(
+            "taskDate"
+        );
+
+    const dateText =
+        document.getElementById(
+            "taskModalDate"
+        );
+
+    dateInput.value =
+        date;
+
+    const parts =
+        date.split("-");
+
+    const readable =
+        parts[2] +
+        "/" +
+        parts[1] +
+        "/" +
+        parts[0];
+
+    dateText.textContent =
+        dayName +
+        " • " +
+        readable;
+
+    modal.classList.add(
+        "show"
+    );
+
+    document.body.style.overflow =
+        "hidden";
+}
+
+
+function closeModal(
+    modalId
+) {
+
+    const modal =
+        document.getElementById(
+            modalId
+        );
+
+    modal.classList.remove(
+        "show"
+    );
+
+    document.body.style.overflow =
+        "";
+}
+
+
+function closeOutside(
+    event,
+    modalId
+) {
+
+    if (
+        event.target.id === modalId
+    ) {
+
+        closeModal(
+            modalId
+        );
+    }
+}
+
+
+document.addEventListener(
+    "keydown",
+    function(event) {
+
+        if (
+            event.key === "Escape"
+        ) {
+
+            closeModal(
+                "dateModal"
+            );
+
+            closeModal(
+                "taskModal"
+            );
+        }
+
+    }
+);
+
+
+</script></body></html>
